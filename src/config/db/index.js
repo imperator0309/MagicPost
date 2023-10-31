@@ -1,17 +1,15 @@
-const mysql = require('mysql2')
+const mongoose = require('mongoose');
 
-const connect = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'magic_post'
-});
-
-connect.connect(function(err) {
-    if (err) {
-        console.log('Connect failed!', err)
+async function connect() {
+    try {
+        await mongoose.connect('mongodb://127.0.0.1/express_learning', {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+        });
+        console.log('Connect Successfully!');
+    } catch (error) {
+        console.log('Connect failed! ',error);
     }
-})
+}
 
-module.exports = connect
-
+module.exports = {connect};
