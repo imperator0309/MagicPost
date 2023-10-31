@@ -1,0 +1,27 @@
+{
+  "name": "magicpost",
+  "version": "1.0.0",
+  "description": "BTL Web Developing",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon./src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/imperator0309/MagicPost.git"
+  },
+  "author": "kaiser",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/imperator0309/MagicPost/issues"
+  },
+  "homepage": "https://github.com/imperator0309/MagicPost#readme",
+  "dependencies": {
+    "express": "^4.18.2",
+    "mysql2": "^3.6.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
