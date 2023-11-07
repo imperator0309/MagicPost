@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 async function connect() {
     try {
-        await mongoose.connect('mongodb://127.0.0.1/express_learning', {
+        await mongoose.connect('mongodb://127.0.0.1/MagicPost', {
             useNewUrlParser: true,
             useUnifiedTopology: true,
         });
