@@ -1,10 +1,10 @@
 const express = require('express')
 const router = express.Router()
 
-const HomeController = require('../app/controllers/HomeController')
+const HomeController = require('../controllers/HomeController')
 
-router.get('/login', HomeController.login)
 router.get('/search', HomeController.search)
+router.post('/login', HomeController.login)
 
 module.exports = router
 

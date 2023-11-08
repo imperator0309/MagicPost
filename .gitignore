@@ -1,5 +1,5 @@
 .vscode
 .history
 node_modules/
-src/resources/
-src/public/style/
+src/frontend/
+.gitignore

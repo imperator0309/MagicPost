@@ -4,7 +4,7 @@
   "description": "BTL Web Developing",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon ./src/index.js",
+    "start": "nodemon ./src/backend/index.js",
     "watch": "node-sass --watch src/resources/scss/ -o src/public/style/",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -21,10 +21,12 @@
   "dependencies": {
     "express": "^4.18.2",
     "express-handlebars": "^7.1.2",
+    "jquery": "^3.7.1",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.6.2"
   },
   "devDependencies": {
+    "cors": "^2.8.5",
     "mongoose": "^8.0.0",
     "mongoose-slug-generator": "^1.0.4",
     "node-sass": "^9.0.0",
