@@ -1,5 +1,5 @@
 .vscode
 .history
 node_modules/
-src/frontend/
 .gitignore
+/src/backend/test.html

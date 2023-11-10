@@ -6,9 +6,11 @@ const cors = require('cors')
 const route = require('./routes')
 
 const app = express()
-const port = 80
+const port = 8080
 
-app.use(cors())
+app.use(cors({
+    origin: '*'
+}))
 app.use(express.static(path.join(__dirname, '../frontend/public')))
 
 app.use(express.urlencoded({
