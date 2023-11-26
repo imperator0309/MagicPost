@@ -1,6 +1,8 @@
 const Parcels = require('../models/Parcels')
 const Actors = require('../models/Actors')
+const jwt = require('jsonwebtoken')
 const {multipleMongooseToObject, mongooseToObject} = require('../../backend/ulti/mongoose')
+const {addSecret, removeSecret, getSecret} = require('../ulti/mappingSecret')
 
 class HomeController {
     //[GET] /search
@@ -10,9 +12,9 @@ class HomeController {
             .then(parcel => {
                 if (parcel) {
                     parcel = mongooseToObject(parcel)
-                    parcel.queryStatus = 'success'
+                    parcel.queySuccess = 'true'
                 } else {
-                    parcel = {queryStatus: 'failed'}
+                    parcel = {queySuccess: 'false'}
                 }
                 res.json(parcel)
             })
@@ -24,16 +26,20 @@ class HomeController {
         var username = req.body.username
         var password = req.body.password
 
-        Actors.find({username: username, password: password})
+        Actors.findOne({username: username, password: password})
             .then(actor => {
-                actor = multipleMongooseToObject(actor)
-                if (actor.length === 1) {
-                    actor = actor[0]
-                    actor.loginStatus = 'success'
+                var response = {}
+                if (actor) {
+                    actor = mongooseToObject(actor)
+                    var cookie = jwt.sign({userID:actor._id}, 'secret')
+                    response.name = actor.name
+                    response.role = actor.role
+                    response.queySuccess = 'true'
+                    res.cookie('id', cookie)
                 } else {
-                    actor = {loginStatus: 'failed'}
+                    response.queySuccess = 'false'
                 }
-                res.json(actor)
+                res.json(response)
             })
     }
 }

@@ -2,6 +2,7 @@ const express = require('express')
 const path = require('path')
 const db = require('./config/db')
 const cors = require('cors')
+const cookieParser = require('cookie-parser')
 
 const route = require('./routes')
 
@@ -11,6 +12,9 @@ const port = 8080
 app.use(cors({
     origin: '*'
 }))
+
+app.use(cookieParser())
+
 app.use(express.static(path.join(__dirname, '../frontend/public')))
 
 app.use(express.urlencoded({

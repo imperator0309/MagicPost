@@ -14,6 +14,7 @@ const Parcels = new Schema({
     senderPhone: {type: String, minLength: 10, maxLength: 10},
     receiverName: {type: String, minLength: 2},
     receiverPhone: {type: String, minLength: 10, maxLength: 10},
+    weight: {type: Number},
     //0: is delivering, 1: success, 2: failed
     status: {type: Number}
 })
