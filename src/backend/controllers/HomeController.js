@@ -11,12 +11,13 @@ class HomeController {
         Parcels.findById(parcelID)
             .then(parcel => {
                 if (parcel) {
-                    parcel = mongooseToObject(parcel)
-                    parcel.queySuccess = 'true'
+                    res.json({
+                        queySuccess: 'true',
+                        parcel: mongooseToObject(parcel)
+                    })
                 } else {
-                    parcel = {queySuccess: 'false'}
+                    res.json({queySuccess: 'false'})
                 }
-                res.json(parcel)
             })
             .catch(next)
     }
@@ -28,18 +29,22 @@ class HomeController {
 
         Actors.findOne({username: username, password: password})
             .then(actor => {
-                var response = {}
+                var account = {}
                 if (actor) {
                     actor = mongooseToObject(actor)
                     var cookie = jwt.sign({userID:actor._id}, 'secret')
-                    response.name = actor.name
-                    response.role = actor.role
-                    response.queySuccess = 'true'
+                    account.name = actor.name
+                    account.role = actor.role
                     res.cookie('id', cookie)
+                    res.json({
+                        queySuccess: 'true',
+                        account: account
+                    })
                 } else {
-                    response.queySuccess = 'false'
+                    res.json({
+                        queySuccess: 'false'
+                    })
                 }
-                res.json(response)
             })
     }
 }

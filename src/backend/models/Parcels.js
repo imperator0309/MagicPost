@@ -7,7 +7,7 @@ const Parcels = new Schema({
     sentFrom: {type: String, required: true},
     sentTo: {type: String, required: true},
     //ids of bases that this parcel has passed
-    passedBases: {type: [String]}, 
+    passedBases: {type: [Object]}, 
     orderDate: {type: Date},
     receivedDatd: {type: Date},
     senderName: {type: String, minLength: 2},

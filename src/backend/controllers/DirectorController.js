@@ -4,7 +4,6 @@ const Bases = require('../models/Bases')
 const jwt = require('jsonwebtoken')
 const {multipleMongooseToObject, mongooseToObject} = require('../../backend/ulti/mongoose')
 const {addSecret, removeSecret, getSecret} = require('../ulti/mappingSecret')
-const { json } = require('express')
 
 class DirectorController {
 
@@ -39,11 +38,12 @@ class DirectorController {
                                 if (actor) {
                                     res.json({querySuccess: 'false', message: 'username existed'})
                                 } else {
-                                    const actor = new Actors(accountData)
-                                    actor.save()
-
-                                    Bases.updateOne({_id: accountData.workAt}, {$set: {managerID: actor._id}})   
-                                        .then(res.json({querySuccess: 'true', message: 'Create Account Successfully'}))
+                                    const account = new Actors(accountData)
+                                    account.save()
+                                        .then(() => {
+                                            Bases.updateOne({_id: accountData.workAt}, {$set: {managerID: account._id}})   
+                                                .then(res.json({querySuccess: 'true', message: 'Create Account Successfully'}))
+                                        })
                                 }
                             })
                     } else {
@@ -55,7 +55,7 @@ class DirectorController {
         }
     }
 
-    //[GET] /director/accounts/edit/:accountID
+    //[GET] /director/accounts/edit
     editAccount(req, res, next) {
         if (req.cookies.id) {
             var userID = jwt.verify(req.cookies.id, 'secret').userID
@@ -69,13 +69,12 @@ class DirectorController {
                     }
 
                     if (querySuccess) {
-                        Actors.findById(req.params.accountID)
+                        Actors.findById(req.query.accountID)
                             .then(actor => {
-                                actor = mongooseToObject(actor)
-                                actor.querySuccess = 'true'
+                                console.log(req.query.accountID)
                                 res.json({
                                     querySuccess: 'true',
-                                    account: actor
+                                    account: mongooseToObject(actor)
                                 })
                             })
                     } else {
@@ -87,7 +86,7 @@ class DirectorController {
         }
     }
 
-    //[PUT] /director/accounts/edit/:id
+    //[PUT] /director/accounts/edit
     updateAccount(req, res, next) {
         if (req.cookies.id) {
             var userID = jwt.verify(req.cookies.id, 'secret').userID
@@ -101,9 +100,15 @@ class DirectorController {
                     }
 
                     if (querySuccess) {
-                        Actors.updateOne({_id: req.params.accountID}, req.body)
+                        Actors.updateOne({_id: req.query.accountID}, req.body)
                             .then(() => {
-                                res.json({querySuccess: 'true', message: 'Updated account successfully'})
+                                Bases.updateOne({managerID: req.query.accountID}, {$unset: {managerID: ""}})
+                                    .then(() => {
+                                        Bases.updateOne({_id: req.body.workAt}, {$set: {managerID: req.query.accountID}})
+                                            .then(() => {
+                                                res.json({querySuccess: 'true', message: 'Updated account successfully'})
+                                            })
+                                    })
                             })
                     } else {
                         res.json({querySuccess: 'false', message: 'Permission Denied'})
@@ -130,8 +135,11 @@ class DirectorController {
                     if (querySuccess) {
                         Actors.deleteOne({_id: req.body.accountID})
                             .then(() => {
-                                res.json({querySuccess: 'true', message: 'Delete Account Successfully'})
-                            })
+                                Bases.updateOne({managerID: req.body.accountID}, {$unset: {managerID: ""}})
+                                    .then(()=>{
+                                        res.json({querySuccess: 'true', message: 'Delete Account Successfully'})
+                                    })
+                            })    
                     } else {
                         res.json({querySuccess: 'false', message: 'Permission Denied'})
                     }
@@ -157,7 +165,10 @@ class DirectorController {
                     if (querySuccess) {
                         Actors.deleteMany({_id: {$in: req.body.accountIDs}})
                             .then(() => {
-                                res.json({querySuccess: 'true', message: 'Delete Accounts Successfully'})
+                                Bases.updateMany({managerID: {$in: req.body.accountIDs}}, {$unset: {managerID: ""}})
+                                    .then(() => {
+                                        res.json({querySuccess: 'true', message: 'Delete Accounts Successfully'})
+                                    })
                             })
                     } else {
                         res.json({querySuccess: 'false', message: 'Permission Denied'})
@@ -216,7 +227,7 @@ class DirectorController {
         }
     }
 
-    //[GET] /director/bases/edit/:id
+    //[GET] /director/bases/edit
     editBase(req, res, next) {
         if (req.cookies.id) {
             var userID = jwt.verify(req.cookies.id, 'secret').userID
@@ -230,13 +241,11 @@ class DirectorController {
                     }
 
                     if (querySuccess) {
-                        Bases.findById(req.params.baseID)
+                        Bases.findById(req.query.baseID)
                             .then(base => {
-                                base = mongooseToObject(base)
-                                base.querySuccess = 'true'
                                 res.json({
                                     querySuccess: 'true',
-                                    base: base
+                                    base: mongooseToObject(base)
                                 })
                             })
                     } else {
@@ -248,7 +257,7 @@ class DirectorController {
         }
     }
 
-    //[PUT] /director/bases/edit/:id
+    //[PUT] /director/bases/edit
     updateBase(req, res, next) {
         if (req.cookies.id) {
             var userID = jwt.verify(req.cookies.id, 'secret').userID
@@ -262,7 +271,7 @@ class DirectorController {
                     }
 
                     if (querySuccess) {
-                        Bases.updateOne({_id: req.params.baseID}, req.body)
+                        Bases.updateOne({_id: req.query.baseID}, req.body)
                             .then(() => {
                                 res.json({querySuccess: 'true', message: 'Updated Base Successfully'})
                             })
@@ -291,7 +300,10 @@ class DirectorController {
                     if (querySuccess) {
                         Bases.deleteOne({_id: req.body.baseID})
                             .then(() => {
-                                res.json({querySuccess: 'true', message: 'Delete Base Successfully'})
+                                Actors.updateMany({workAt: req.body.baseID}, {$unset: {workAt: ""}})
+                                    .then(() => {
+                                        res.json({querySuccess: 'true', message: 'Delete Base Successfully'})
+                                    })
                             })
                     } else {
                         res.json({querySuccess: 'false', message: 'Permission Denied'})
@@ -318,7 +330,10 @@ class DirectorController {
                     if (querySuccess) {
                         Actors.deleteMany({_id: {$in: req.body.baseIDs}})
                             .then(() => {
-                                res.json({querySuccess: 'true', message: 'Delete Bases Successfully'})
+                                Actors.updateMany({workAt: {$in: req.body.baseIDs}}, {$unset: {workAt: ""}})
+                                    .then(() => {
+                                        res.json({querySuccess: 'true', message: 'Delete Bases Successfully'})
+                                    })
                             })
                     } else {
                         res.json({querySuccess: 'false', message: 'Permission Denied'})
@@ -329,6 +344,5 @@ class DirectorController {
         }
     }
 }
-
 
 module.exports = new DirectorController
