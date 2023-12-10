@@ -9,6 +9,5 @@ router.get('/accounts', ManagerController.showAccounts)
 router.post('/accounts/create', ManagerController.createAccount)
 router.put('/accounts/edit', ManagerController.updateAccount)
 router.delete('/accounts/delete', ManagerController.deleteAccount)
-router.delete('/accounts/multiple-delete', ManagerController.deleteMultipleAccounts)
 
 module.exports = router

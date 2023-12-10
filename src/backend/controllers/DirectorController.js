@@ -3,344 +3,183 @@ const Actors = require('../models/Actors')
 const Bases = require('../models/Bases')
 const jwt = require('jsonwebtoken')
 const {multipleMongooseToObject, mongooseToObject} = require('../../backend/ulti/mongoose')
-const {addSecret, removeSecret, getSecret} = require('../ulti/mappingSecret')
+require('dotenv').config()
 
 class DirectorController {
-
     //[GET] /director/accounts
     showAccounts(req, res, next) {
-        Actors.find({role: [1, 2]})
-            .then(actors => {
-                res.json({
-                    querySuccess: 'true',
-                    accounts: multipleMongooseToObject(actors)
-                })
-            })
+        if (req.cookies.jwt) {
+            var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
+            if (userRole == 0) {
+                Actors.find({role: [1, 2]})
+                    .then(actors => {
+                        res.status(200).json({
+                            accounts: multipleMongooseToObject(actors)
+                        })
+                    })
+            } else {
+                res.status(403).json({message: 'Permission Denied'})
+            }
+        } else {
+            res.status(401).json({message: 'Permission Denied'})
+        }
     }
 
     //[POST] /director/accounts/create
     createAccount(req, res, next) {
-        if (req.cookies.id) {
-            var userID = jwt.verify(req.cookies.id, 'secret').userID
-            Actors.findById(userID)
-                .then(director => {
-                    var querySuccess = false
-                    if (director) {
-                        if (director.role == 0) {
-                            querySuccess = true
-                        }
-                    }
-
-                    if (querySuccess) {
-                        var accountData = req.body
-                        Actors.findOne({username: accountData.username})
-                            .then(actor => {
-                                if (actor) {
-                                    res.json({querySuccess: 'false', message: 'username existed'})
-                                } else {
-                                    const account = new Actors(accountData)
-                                    account.save()
+        if (req.cookies.jwt) {
+            var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
+            if (userRole == 0) {
+                var accountData = req.body
+                Actors.findOne({username: accountData.username})
+                    .then(actor => {
+                        if (actor) {
+                            res.status(409).json({message: 'username existed'})
+                        } else {
+                            const account = new Actors(accountData)
+                            account.save()
+                                .then(() => {
+                                    Bases.updateOne({_id: accountData.workAt}, {$set: {managerID: account._id}})   
                                         .then(() => {
-                                            Bases.updateOne({_id: accountData.workAt}, {$set: {managerID: account._id}})   
-                                                .then(res.json({querySuccess: 'true', message: 'Create Account Successfully'}))
+                                            res.status(200).json({message: 'Create Account Successfully'})
                                         })
-                                }
-                            })
-                    } else {
-                        res.json({querySuccess: 'false', message: 'Permission Denied'})
-                    }
-                })
+                                })
+                        }
+                    })
+            } else {
+                res.status(403).json({message: 'Permission Denied'})
+            }
         } else {
-            res.json({querySuccess: 'false', message: 'Permission Denied'})
+            res.status(401).json({message: 'Permission Denied'})
         }
     }
 
     //[GET] /director/accounts/edit
     editAccount(req, res, next) {
-        if (req.cookies.id) {
-            var userID = jwt.verify(req.cookies.id, 'secret').userID
-            Actors.findById(userID)
-                .then(director => {
-                    var querySuccess = false
-                    if (director) {
-                        if (director.role == 0) {
-                            querySuccess = true
-                        }
-                    }
-
-                    if (querySuccess) {
-                        Actors.findById(req.query.accountID)
-                            .then(actor => {
-                                console.log(req.query.accountID)
-                                res.json({
-                                    querySuccess: 'true',
-                                    account: mongooseToObject(actor)
-                                })
-                            })
-                    } else {
-                        res.json({querySuccess: 'false', message: 'Permission Denied'})
-                    }
-                })
+        if (req.cookies.jwt) {
+            var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
+            if (userRole == 0) {
+                Actors.findById(req.query.accountID)
+                    .then(actor => {
+                        console.log(req.query.accountID)
+                        res.status(200).json({
+                            account: mongooseToObject(actor)
+                        })
+                    })
+            } else {
+                res.status(403).json({message: 'Permission Denied'})
+            }
         } else {
-            res.json({querySuccess: 'false', message: 'Permission Denied'})
+            res.status(401).json({message: 'Permission Denied'})
         }
     }
 
     //[PUT] /director/accounts/edit
     updateAccount(req, res, next) {
-        if (req.cookies.id) {
-            var userID = jwt.verify(req.cookies.id, 'secret').userID
-            Actors.findById(userID)
-                .then(director => {
-                    var querySuccess = false
-                    if (director) {
-                        if (director.role == 0) {
-                            querySuccess = true
-                        }
-                    }
-
-                    if (querySuccess) {
-                        Actors.updateOne({_id: req.query.accountID}, req.body)
+        if (req.cookies.jwt) {
+            var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
+            if (userRole == 0) {
+                Actors.updateOne({_id: req.query.accountID}, req.body)
+                    .then(() => {
+                        Bases.updateOne({managerID: req.query.accountID}, {$unset: {managerID: ""}})
                             .then(() => {
-                                Bases.updateOne({managerID: req.query.accountID}, {$unset: {managerID: ""}})
+                                Bases.updateOne({_id: req.body.workAt}, {$set: {managerID: req.query.accountID}})
                                     .then(() => {
-                                        Bases.updateOne({_id: req.body.workAt}, {$set: {managerID: req.query.accountID}})
-                                            .then(() => {
-                                                res.json({querySuccess: 'true', message: 'Updated account successfully'})
-                                            })
+                                        res.status(200).json({message: 'Updated account successfully'})
                                     })
                             })
-                    } else {
-                        res.json({querySuccess: 'false', message: 'Permission Denied'})
-                    }
-                })
+                    })
+            } else {
+                res.status(403).json({message: 'Permission Denied'})
+            }
         } else {
-            res.json({querySuccess: 'false', message: 'Permission Denied'})
+            res.status(401).json({message: 'Permission Denied'})
         }
     }
 
     //[DELETE] /director/accounts/delete
     deleteAccount(req, res, next) {
-        if (req.cookies.id) {
-            var userID = jwt.verify(req.cookies.id, 'secret').userID
-            Actors.findById(userID)
-                .then(director => {
-                    var querySuccess = false
-                    if (director) {
-                        if (director.role == 0) {
-                            querySuccess = true
-                        }
-                    }
-
-                    if (querySuccess) {
-                        Actors.deleteOne({_id: req.body.accountID})
+        if (req.cookies.jwt) {
+            var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
+            if (userRole == 0) {
+                Actors.deleteMany({_id: {$in: req.body.accountIDs}})
+                    .then(() => {
+                        Bases.updateMany({managerID: {$in: req.body.accountIDs}}, {$unset: {managerID: ""}})
                             .then(() => {
-                                Bases.updateOne({managerID: req.body.accountID}, {$unset: {managerID: ""}})
-                                    .then(()=>{
-                                        res.json({querySuccess: 'true', message: 'Delete Account Successfully'})
-                                    })
-                            })    
-                    } else {
-                        res.json({querySuccess: 'false', message: 'Permission Denied'})
-                    }
-                })
-        } else {
-            res.json({querySuccess: 'false', message: 'Permission Denied'})
-        }
-    }
-
-    //[DELETE] /director/accounts/multiple-delete
-    deleteMultipleAccounts(req, res, next) {
-        if (req.cookies.id) {
-            var userID = jwt.verify(req.cookies.id, 'secret').userID
-            Actors.findById(userID)
-                .then(director => {
-                    var querySuccess = false
-                    if (director) {
-                        if (director.role == 0) {
-                            querySuccess = true
-                        }
-                    }
-
-                    if (querySuccess) {
-                        Actors.deleteMany({_id: {$in: req.body.accountIDs}})
-                            .then(() => {
-                                Bases.updateMany({managerID: {$in: req.body.accountIDs}}, {$unset: {managerID: ""}})
-                                    .then(() => {
-                                        res.json({querySuccess: 'true', message: 'Delete Accounts Successfully'})
-                                    })
+                                res.status(200).json({message: 'Delete Accounts Successfully'})
                             })
-                    } else {
-                        res.json({querySuccess: 'false', message: 'Permission Denied'})
-                    }
-                })
+                    })
+            } else {
+                res.status(403).json({message: 'Permission Denied'})
+            }
         } else {
-            res.json({querySuccess: 'false', message: 'Permission Denied'})
+            res.status(401).json({message: 'Permission Denied'})
         }
     }
 
     //[GET] /director/bases
     showBases(req, res, next) {
-        Bases.find({})
-            .then(bases => {
-                res.json({
-                    querySuccess: 'true',
-                    bases: multipleMongooseToObject(bases)
-                })
-            })
+        if (req.cookies.jwt) {
+            var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
+            if (userRole == 0) {
+                Bases.find({})
+                    .then(bases => {
+                        res.status(200).json({
+                            bases: multipleMongooseToObject(bases)
+                        })
+                    })
+            } else {
+                res.status(403).json({message: 'Permission Denied'})
+            }
+        } else {
+            res.status(401).json({message: 'Permission Denied'})
+        }
     }
 
     //[POST] /director/bases/create
     createBase(req, res, next) {
-        if (req.cookies.id) {
-            var userID = jwt.verify(req.cookies.id, 'secret').userID
-            Actors.findById(userID)
-                .then(director => {
-                    var querySuccess = false
-                    if (director) {
-                        if (director.role == 0) {
-                            querySuccess = true
-                        }
-                    }
-
-                    if (querySuccess) {
-                        var baseData = req.body
-                        if (baseData.baseType == 1) {
-                            Bases.findOne({baseLocation: baseData.superiorBase})
-                                .then(superior => {
-                                    baseData.superiorBase = superior._id
-                                    const base = new Bases(baseData)
-                                    base.save()
-                                        .then(res.json({querySuccess: 'true', message: 'Create Base Successfully'}))
-                                    })
-                        } else {
+        if (req.cookies.jwt) {
+            var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
+            if (userRole == 0) {
+                var baseData = req.body
+                if (baseData.baseType == 1) {
+                    Bases.findOne({baseLocation: baseData.superiorBase})
+                        .then(superior => {
+                            baseData.superiorBase = superior._id
                             const base = new Bases(baseData)
                             base.save()
-                                .then(res.json({querySuccess: 'true', message: 'Create Base Successfully'}))
-                        }
-                    } else {
-                        res.json({querySuccess: 'false', message: 'Permission Denied'})
-                    }
-                })
-        } else {
-            res.json({querySuccess: 'false', message: 'Permission Denied'})
-        }
-    }
-
-    //[GET] /director/bases/edit
-    editBase(req, res, next) {
-        if (req.cookies.id) {
-            var userID = jwt.verify(req.cookies.id, 'secret').userID
-            Actors.findById(userID)
-                .then(director => {
-                    var querySuccess = false
-                    if (director) {
-                        if (director.role == 0) {
-                            querySuccess = true
-                        }
-                    }
-
-                    if (querySuccess) {
-                        Bases.findById(req.query.baseID)
-                            .then(base => {
-                                res.json({
-                                    querySuccess: 'true',
-                                    base: mongooseToObject(base)
-                                })
+                                .then(res.status(200).json({message: 'Create Base Successfully'}))
                             })
-                    } else {
-                        res.json({querySuccess: 'false', message: 'Permission Denied'})
-                    }
-                })
+                } else {
+                    const base = new Bases(baseData)
+                    base.save()
+                        .then(res.status(200).json({message: 'Create Base Successfully'}))
+                }
+            } else {
+                res.status(403).json({message: 'Permission Denied'})
+            }
         } else {
-            res.json({querySuccess: 'false', message: 'Permission Denied'})
-        }
-    }
-
-    //[PUT] /director/bases/edit
-    updateBase(req, res, next) {
-        if (req.cookies.id) {
-            var userID = jwt.verify(req.cookies.id, 'secret').userID
-            Actors.findById(userID)
-                .then(director => {
-                    var querySuccess = false
-                    if (director) {
-                        if (director.role == 0) {
-                            querySuccess = true
-                        }
-                    }
-
-                    if (querySuccess) {
-                        Bases.updateOne({_id: req.query.baseID}, req.body)
-                            .then(() => {
-                                res.json({querySuccess: 'true', message: 'Updated Base Successfully'})
-                            })
-                    } else {
-                        res.json({querySuccess: 'false', message: 'Permission Denied'})
-                    }
-                })
-        } else {
-            res.json({querySuccess: 'false', message: 'Permission Denied'})
+            res.status(401).json({message: 'Permission Denied'})
         }
     }
 
     //[DELETE] /director/bases/delete
     deleteBase(req, res, next) {
-        if (req.cookies.id) {
-            var userID = jwt.verify(req.cookies.id, 'secret').userID
-            Actors.findById(userID)
-                .then(director => {
-                    var querySuccess = false
-                    if (director) {
-                        if (director.role == 0) {
-                            querySuccess = true
-                        }
-                    }
-
-                    if (querySuccess) {
-                        Bases.deleteOne({_id: req.body.baseID})
+        if (req.cookies.jwt) {
+            var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
+            if (userRole == 0) {
+                Actors.deleteMany({_id: {$in: req.body.baseIDs}})
+                    .then(() => {
+                        Actors.updateMany({workAt: {$in: req.body.baseIDs}}, {$unset: {workAt: ""}})
                             .then(() => {
-                                Actors.updateMany({workAt: req.body.baseID}, {$unset: {workAt: ""}})
-                                    .then(() => {
-                                        res.json({querySuccess: 'true', message: 'Delete Base Successfully'})
-                                    })
+                                res.status(200).json({message: 'Delete Bases Successfully'})
                             })
-                    } else {
-                        res.json({querySuccess: 'false', message: 'Permission Denied'})
-                    }
-                })
+                    })
+            } else {
+                res.status(403).json({message: 'Permission Denied'})
+            }
         } else {
-            res.json({querySuccess: 'false', message: 'Permission Denied'})
-        }
-    }
-
-    //[DELETE] /director/bases/multiple-delete
-    deleteMultipleBases(req, res, next) {
-        if (req.cookies.id) {
-            var userID = jwt.verify(req.cookies.id, 'secret').userID
-            Actors.findById(userID)
-                .then(director => {
-                    var querySuccess = false
-                    if (director) {
-                        if (director.role == 0) {
-                            querySuccess = true
-                        }
-                    }
-
-                    if (querySuccess) {
-                        Actors.deleteMany({_id: {$in: req.body.baseIDs}})
-                            .then(() => {
-                                Actors.updateMany({workAt: {$in: req.body.baseIDs}}, {$unset: {workAt: ""}})
-                                    .then(() => {
-                                        res.json({querySuccess: 'true', message: 'Delete Bases Successfully'})
-                                    })
-                            })
-                    } else {
-                        res.json({querySuccess: 'false', message: 'Permission Denied'})
-                    }
-                })
-        } else {
-            res.json({querySuccess: 'false', message: 'Permission Denied'})
+            res.status(401).json({message: 'Permission Denied'})
         }
     }
 }

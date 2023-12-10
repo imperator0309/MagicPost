@@ -7,15 +7,23 @@ const Parcels = new Schema({
     sentFrom: {type: String, required: true},
     sentTo: {type: String, required: true},
     //ids of bases that this parcel has passed
-    passedBases: {type: [Object]}, 
+    passedBases: {type: [Object]},
+    nextBase: {type: String},
     orderDate: {type: Date},
-    receivedDatd: {type: Date},
+    finishedDate: {type: Date},
     senderName: {type: String, minLength: 2},
     senderPhone: {type: String, minLength: 10, maxLength: 10},
     receiverName: {type: String, minLength: 2},
     receiverPhone: {type: String, minLength: 10, maxLength: 10},
     weight: {type: Number},
-    //0: is delivering, 1: success, 2: failed
+    /**
+     * Parcel status code:
+     * 0: processing
+     * 1: delivering
+     * 2: forward to receiver
+     * 3: forwarded successfully
+     * 4: forwarded failed
+     */
     status: {type: Number}
 })
 

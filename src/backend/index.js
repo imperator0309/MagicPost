@@ -3,11 +3,12 @@ const path = require('path')
 const db = require('./config/db')
 const cors = require('cors')
 const cookieParser = require('cookie-parser')
+require('dotenv').config()
 
 const route = require('./routes')
 
 const app = express()
-const port = 8080
+const port = process.env.PORT
 
 app.use(cors({
     origin: '*'
@@ -29,5 +30,4 @@ db.connect()
 route(app)
 
 app.listen(port, () => console.log(`App listening at http://localhost:${port}`))
-
 
