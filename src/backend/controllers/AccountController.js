@@ -101,14 +101,14 @@ class AccountController {
         }
     }
 
-    //[GET] /account/edit
+    //[GET] /account/edit/:id
     editAccount(req, res, next) {
         if (req.cookies.jwt) {
             var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
             if (userRole == 0 || userRole == 1 || userRole == 2) {
-                Actors.findById(req.query.accountID)
+                Actors.findById(req.params.id)
                     .then(actor => {
-                        console.log(req.query.accountID)
+                        console.log(req.params.id)
                         res.status(200).json({
                             account: mongooseToObject(actor)
                         })
@@ -121,17 +121,17 @@ class AccountController {
         }
     }
 
-    //[PUT] /account/edit
+    //[PUT] /account/edit/:id
     updateAccount(req, res, next) {
         if (req.cookies.jwt) {
             var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
             if (userRole == 0 || userRole == 1 || userRole == 2) {
                 if (userRole == 0) {
-                    Actors.updateOne({_id: req.query.accountID}, req.body)
+                    Actors.updateOne({_id: req.params.id}, req.body)
                         .then(() => {
-                            Bases.updateOne({managerID: req.query.accountID}, {$unset: {managerID: ""}})
+                            Bases.updateOne({managerID: req.params.id}, {$unset: {managerID: ""}})
                                 .then(() => {
-                                    Bases.updateOne({_id: req.body.workAt}, {$set: {managerID: req.query.accountID}})
+                                    Bases.updateOne({_id: req.body.workAt}, {$set: {managerID: req.params.id}})
                                         .then(() => {
                                             res.status(200).json('Updated account successfully')
                                         })
@@ -139,7 +139,7 @@ class AccountController {
                         })
                 } else {
                     Actors.updateOne(
-                        {_id: req.query.accountID}, 
+                        {_id: req.params.id}, 
                         {$set: {name: req.body.name, username: req.body.username, password: req.body.password}})
                         .then(() => {
                             res.status(200).json('Updated account successfully')
@@ -158,16 +158,16 @@ class AccountController {
         if (req.cookies.jwt) {
             var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
             if (userRole == 0 || userRole == 1 || userRole == 2) {
-                Actors.deleteMany({_id: {$in: req.body.accountIDs}})
+                Actors.deleteMany({_id: {$in: req.body.ids}})
                     .then(() => {
                         if (userRole == 0) {
-                            Bases.updateMany({managerID: {$in: req.body.accountIDs}}, {$unset: {managerID: ""}})
+                            Bases.updateMany({managerID: {$in: req.body.ids}}, {$unset: {managerID: ""}})
                                 .then(() => {
                                     res.status(200).json({message: 'Delete Accounts Successfully'})
                                 })
                         } else {
                             var userBaseID = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).workAt
-                            Bases.updateOne({_id: userBaseID}, {$pull: {StaffIDs: {$in: req.body.accountIDs}}})
+                            Bases.updateOne({_id: userBaseID}, {$pull: {StaffIDs: {$in: req.body.ids}}})
                             .then(() => {
                                 res.status(200).json({message: 'Delete Account Successfully'})
                             })

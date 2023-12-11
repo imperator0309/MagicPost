@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken')
 const {multipleMongooseToObject, mongooseToObject} = require('../ulti/mongoose')
 require('dotenv').config()
 
-class EmployeeController {
+class ParcelController {
     
     //[POST] /parcel/transaction-base/create
     createParcel(req, res, next) {
@@ -59,14 +59,20 @@ class EmployeeController {
     }
 
     //[PUT] /parcel/transaction-base/to-distribution-base
-    forwardToDistributionBase(req, res, next) {
+    forwardToDistributionBase(req, res, next) { 
         if (req.cookies.jwt) {
             var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
             var workingBaseID = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).workAt
             if (userRole == 4) {
                 Bases.findById(workingBaseID)
-                    .then(workingBase => {
-                        Parcels.updateMany({_id: {$in: req.body.parcelIDs}}, {$set: {nextBase: workingBase.superiorBase, status: 1}})
+                    .then(workingBase => {                        
+                        Parcels.updateMany({_id: {$in: req.body.parcelIDs}},
+                            {
+                                $set: {
+                                    nextBase: workingBase.superiorBase, status: 1,
+                                    "passedBases.$.leave": (new Date()).toISOString()
+                                }
+                            })
                             .then(() => {
                                 res.status(200).json("Create forwarding successfully")
                             })
@@ -211,7 +217,10 @@ class EmployeeController {
             var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
             var workingBaseID = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).workAt
             if (userRole == 4) {
-                Parcels.updateMany({_id: {$in: req.body.parcelIDs}}, {$set: {status: 2}})
+                Parcels.updateMany({_id: {$in: req.body.parcelIDs}},
+                    {
+                        $set: {status: 2, "passedBases.$.leave": (new Date()).toISOString()}
+                    })
                         .then(() => {
                             res.status(200).json("Create Parcels sent to receiver successfully")
                         })
@@ -460,9 +469,14 @@ class EmployeeController {
     forwardToTransactionBase(req, res, next) {
         if (req.cookies.jwt) {
             var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
-            var workingBaseID = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).workAt
             if (userRole == 3) {
-                Parcels.updateMany({_id: {$in: req.body.parcelIDs}}, {$set: {nextBase: req.body.nextBase}})
+                Parcels.updateMany({_id: {$in: req.body.parcelIDs}},
+                    {
+                        $set: {
+                            nextBase: req.body.nextBase,
+                            "passedBases.$.leave": (new Date()).toISOString()
+                        }
+                    })
                     .then(() => {
                         res.status(200).json("Sent to transaction base successfully")
                     })
@@ -475,4 +489,4 @@ class EmployeeController {
     }
 }
 
-module.exports = new EmployeeController
+module.exports = new ParcelController

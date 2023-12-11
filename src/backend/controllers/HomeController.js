@@ -5,10 +5,9 @@ const {multipleMongooseToObject, mongooseToObject} = require('../../backend/ulti
 const Bases = require('../models/Bases')
 
 class HomeController {
-    //[GET] /search
+    //[GET] /search?id=parcelID
     search(req, res, next) {
-        var parcelID = req.query.parcelID
-        Parcels.findById(parcelID)
+        Parcels.findById(req.query.id)
             .then(parcel => {
                 if (parcel) {
                     res.status(200).json({

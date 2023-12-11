@@ -7,4 +7,3 @@ router.get('/search', HomeController.search)
 router.post('/login', HomeController.login)
 
 module.exports = router
-

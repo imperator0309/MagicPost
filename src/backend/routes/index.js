@@ -1,10 +1,14 @@
 const homeRouter = require('./home')
-const directorRouter = require('./director')
-const managerRouter = require('./manager')
+const myRouter = require('./my')
+const parcelRouter = require('./parcel')
+const baseRouter = require('./base')
+const accountRouter = require('./account')
 
 function route(app) {
-    app.use('/director', directorRouter)
-    app.use('/manager', managerRouter)
+    app.use('/my', myRouter)
+    app.use('/account', accountRouter)
+    app.use('/base', baseRouter)
+    app.use('/parcel', parcelRouter)
     app.use('/', homeRouter)
 }
 
