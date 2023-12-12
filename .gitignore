@@ -2,4 +2,3 @@
 .history
 node_modules/
 .gitignore
-/src/backend/test.html

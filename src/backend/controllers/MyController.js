@@ -15,10 +15,17 @@ class MyController {
                 getTotalStatistic().then((result) => {
                     statistic = result 
 
-                    Actors.findById(userID)
-                        .then(user => {
+                    const distributionBases = Bases.find({baseType: 0})
+                    const transactionBases = Bases.find({baseType: 1})
+                    const director = Actors.findById(userID)
+
+                    Promise.all([director, distributionBases, transactionBases])
+                        .then(([director, distributionBases, transactionBases]) => {
                             res.status(200).json({
-                                name: user.name,
+                                name: director.name,
+                                role: director.role,
+                                distributionBases: multipleMongooseToObject(distributionBases),
+                                transactionBases: multipleMongooseToObject(transactionBases),
                                 total: statistic.totalParcels,
                                 received: statistic.receivedParcels
                             })
@@ -31,10 +38,10 @@ class MyController {
                     statistic = result
 
                     const userData = Actors.findById(userID)
-                    const workingBase = Bases.findById(userBaseID)
+                    const workingBase = Bases.findById({_id: userBaseID})
                     
                     Promise.all([userData, workingBase])
-                        .then((user, base) => {
+                        .then(([user, base]) => {
                             res.status(200).json({
                                 name: user.name,
                                 baseID: base._id,
@@ -51,7 +58,7 @@ class MyController {
                 const workingBase = Bases.findById(userBaseID)
 
                 Promise.all([userData, workingBase])
-                    .then((user, base) => {
+                    .then(([user, base]) => {
                         res.status(200).json({
                             name: user.name,
                             baseID: base._id,
@@ -64,12 +71,12 @@ class MyController {
         }
     }
 
-    //[GET] /my/statistic/:id
+    //[GET] /my/statistic?id=
     showStatisticByBase(req, res, next) {
         if (req.cookies.jwt) {
             var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
-            const baseID = req.params.id
-            if (userRole == 0) {
+            const baseID = req.query.id
+            if (userRole == 0 || userRole == 1) {
                 var statistic
                 getBaseGeneralStatistic(baseID).then((result) => {
                     statistic = result

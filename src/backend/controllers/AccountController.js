@@ -63,7 +63,7 @@ class AccountController {
     createAccount(req, res, next) {
         if (req.cookies.jwt) {
             var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
-            if (userRole == 0) {
+            if (userRole == 0 || userRole == 1 || userRole == 2) {
                 var accountData = req.body
                 Actors.findOne({username: accountData.username})
                     .then(actor => {
@@ -101,14 +101,14 @@ class AccountController {
         }
     }
 
-    //[GET] /account/edit/:id
+    //[GET] /account/edit?id=
     editAccount(req, res, next) {
         if (req.cookies.jwt) {
             var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
             if (userRole == 0 || userRole == 1 || userRole == 2) {
-                Actors.findById(req.params.id)
+                Actors.findById(req.query.id)
                     .then(actor => {
-                        console.log(req.params.id)
+                        console.log(req.query.id)
                         res.status(200).json({
                             account: mongooseToObject(actor)
                         })
@@ -121,17 +121,17 @@ class AccountController {
         }
     }
 
-    //[PUT] /account/edit/:id
+    //[PUT] /account/edit?id=
     updateAccount(req, res, next) {
         if (req.cookies.jwt) {
             var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
             if (userRole == 0 || userRole == 1 || userRole == 2) {
                 if (userRole == 0) {
-                    Actors.updateOne({_id: req.params.id}, req.body)
+                    Actors.updateOne({_id: req.query.id}, req.body)
                         .then(() => {
-                            Bases.updateOne({managerID: req.params.id}, {$unset: {managerID: ""}})
+                            Bases.updateOne({managerID: req.query.id}, {$unset: {managerID: ""}})
                                 .then(() => {
-                                    Bases.updateOne({_id: req.body.workAt}, {$set: {managerID: req.params.id}})
+                                    Bases.updateOne({_id: req.body.workAt}, {$set: {managerID: req.query.id}})
                                         .then(() => {
                                             res.status(200).json('Updated account successfully')
                                         })
@@ -139,7 +139,7 @@ class AccountController {
                         })
                 } else {
                     Actors.updateOne(
-                        {_id: req.params.id}, 
+                        {_id: req.query.id}, 
                         {$set: {name: req.body.name, username: req.body.username, password: req.body.password}})
                         .then(() => {
                             res.status(200).json('Updated account successfully')
