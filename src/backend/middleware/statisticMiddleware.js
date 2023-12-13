@@ -158,14 +158,27 @@ module.exports = {
             const receivedParcels = Parcels.aggregate([
                 {
                     $match: {
-                        "passedBases.0.timestamp": { $regex: `^${currentYear}` },
-                        "passedBases.0.id": baseID,
-                        status: 3
+                        "passedBases": {
+                            $elemMatch: {
+                                $expr: {
+                                    $eq: [
+                                        { $arrayElemAt: ["$passedBases.id", -1] },
+                                        baseID
+                                    ]
+                                },
+                                $expr: {
+                                    $eq: [
+                                        {$toInt: {$substr: [{$arrayElemAt: ["$passedBases.timestamp", -1]}, 0, 4]}},
+                                        currentYear
+                                    ]
+                                }
+                            }
+                        }
                     }
                 },
                 {
                     $project: {
-                        month: {$substr: [{ $arrayElemAt: ["$passedBases.timestamp", 0]}, 5, 2]}
+                        month: { $month: { $dateFromString: { dateString: { $arrayElemAt: ["$passedBases.timestamp", -1] } } } }
                     }
                 },
                 {

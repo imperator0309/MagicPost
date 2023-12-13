@@ -17,7 +17,9 @@ class HomeController {
                     res.status(404).json({message: 'parcel not found'})
                 }
             })
-            .catch(next)
+            .catch(err => {
+                res.status(400).json("bad request")
+            })
     }
 
     //[POST] /login

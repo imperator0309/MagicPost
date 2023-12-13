@@ -81,6 +81,7 @@ class AccountController {
                                     })
                             } else {
                                 var userBaseID = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).workAt
+                                accountData.role = userRole == 1 ? 3 : 4
                                 accountData.workAt = userBaseID
                                 const account = new Actors(accountData)
                                 account.save()

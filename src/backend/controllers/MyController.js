@@ -44,10 +44,11 @@ class MyController {
                         .then(([user, base]) => {
                             res.status(200).json({
                                 name: user.name,
-                                baseID: base._id,
+                                workAt: base._id,
+                                role: user.role,
                                 baseLocation: base.baseLocation,
                                 total: statistic.totalParcels,
-                                received: statistic.receivedParcels
+                                delivered: statistic.receivedParcels
                             })
                         })
                 })
@@ -61,7 +62,8 @@ class MyController {
                     .then(([user, base]) => {
                         res.status(200).json({
                             name: user.name,
-                            baseID: base._id,
+                            role: user.role,
+                            workAt: base._id,
                             baseLocation: base.baseLocation
                         })
                     })
@@ -82,7 +84,7 @@ class MyController {
                     statistic = result
                     res.status(200).json({
                         total: statistic.totalParcels,
-                        received: statistic.receivedParcels
+                        delivered: statistic.receivedParcels
                     })
                 })
             } else if (userRole == 2) {
