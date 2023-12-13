@@ -6,12 +6,20 @@ const {multipleMongooseToObject, mongooseToObject} = require('../ulti/mongoose')
 require('dotenv').config()
 
 class BaseController {
-    //[GET] /base/view
+    //[GET] /base/view?page=
     viewBases(req, res, next) {
+        const pageSize = parseInt(process.env.PAGE_SIZE)
+        var page = req.query.page ? parseInt(req.query.page) : 1
+        page = isNaN(page) ? 1 : page
+        page = page < 1 ? 1 : page
+
         if (req.cookies.jwt) {
             var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
             if (userRole == 0) {
                 Bases.find({})
+                    .sort({_id: 1})
+                    .skip(((page - 1) * pageSize))
+                    .limit(pageSize)
                     .then(bases => {
                         res.status(200).json({
                             bases: multipleMongooseToObject(bases)

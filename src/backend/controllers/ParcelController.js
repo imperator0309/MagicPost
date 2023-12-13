@@ -38,13 +38,20 @@ class ParcelController {
         }
     }
 
-    //[GET] /parcel/transaction-base/to-distribution-base/in-queue
+    //[GET] /parcel/transaction-base/to-distribution-base/in-queue?page=
     showToDistributionBaseInQueue(req, res, next) {
+        const pageSize = parseInt(process.env.PAGE_SIZE)
+        var page = req.query.page ? parseInt(req.query.page) : 1
+        page = isNaN(page) ? 1 : page
+        page = page < 1 ? 1 : page
+
         if (req.cookies.jwt) {
             var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
             var workingBaseID = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).workAt
             if (userRole == 4) {
                 Parcels.find({status: 0, passedBases: {$size: 1, $elemMatch: {id: workingBaseID}}})
+                    .skip(((page - 1) * pageSize))
+                    .limit(pageSize)
                     .then(parcels => {
                         res.status(200).json({
                             parcels: multipleMongooseToObject(parcels)
@@ -89,8 +96,13 @@ class ParcelController {
         }
     }
 
-    //[GET] /parcel/transaction-base/to-distribution-base/history
+    //[GET] /parcel/transaction-base/to-distribution-base/history?page=
     showToDistributionBaseHistory(req, res, next) {
+        const pageSize = parseInt(process.env.PAGE_SIZE)
+        var page = req.query.page ? parseInt(req.query.page) : 1
+        page = isNaN(page) ? 1 : page
+        page = page < 1 ? 1 : page
+
         if (req.cookies.jwt) {
             var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
             var workingBaseID = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).workAt
@@ -114,6 +126,15 @@ class ParcelController {
                                 ]
                             }
                         }
+                    },
+                    {
+                        $sort: {orderDate: -1}
+                    },
+                    {
+                        $skip: (page - 1) * pageSize
+                    },
+                    {
+                        $limit: pageSize
                     }
                 ])
                     .then(parcels => {
@@ -129,13 +150,21 @@ class ParcelController {
         }
     }
 
-    //[GET] /parcel/transaction-base/incoming
+    //[GET] /parcel/transaction-base/incoming?page=?
     showIncoming(req, res, next) {
+        const pageSize = parseInt(process.env.PAGE_SIZE)
+        var page = req.query.page ? parseInt(req.query.page) : 1
+        page = isNaN(page) ? 1 : page
+        page = page < 1 ? 1 : page
+
         if (req.cookies.jwt) {
             var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
             var workingBaseID = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).workAt
             if (userRole == 4) {
                 Parcels.find({status: 1, nextBase: workingBaseID})
+                    .sort({_id: -1})
+                    .skip(((page - 1) * pageSize))
+                    .limit(pageSize)
                     .then(parcels => {
                         res.status(200).json({
                             parcels: multipleMongooseToObject(parcels)
@@ -175,8 +204,13 @@ class ParcelController {
         }
     }
 
-    //[GET] /parcel/transaction-base/to-receiver/in-queue
+    //[GET] /parcel/transaction-base/to-receiver/in-queue?page=
     showToReceiverInQueue(req, res, next) {
+        const pageSize = parseInt(process.env.PAGE_SIZE)
+        var page = req.query.page ? parseInt(req.query.page) : 1
+        page = isNaN(page) ? 1 : page
+        page = page < 1 ? 1 : page
+
         if (req.cookies.jwt) {
             var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
             var workingBaseID = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).workAt
@@ -200,6 +234,15 @@ class ParcelController {
                                 ]
                             }
                         }
+                    },
+                    {
+                        $sort: {_id: -1}
+                    },
+                    {
+                        $skip: (page - 1) * pageSize
+                    },
+                    {
+                        $limit: pageSize
                     }
                 ])
                     .then(parcels => {
@@ -239,8 +282,13 @@ class ParcelController {
         }
     }
 
-    //[GET] /parcel/transaction-base/to-receiver/delivering
+    //[GET] /parcel/transaction-base/to-receiver/delivering?page=
     showToReceiverDelivering(req, res, next) {
+        const pageSize = parseInt(process.env.PAGE_SIZE)
+        var page = req.query.page ? parseInt(req.query.page) : 1
+        page = isNaN(page) ? 1 : page
+        page = page < 1 ? 1 : page
+
         if (req.cookies.jwt) {
             var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
             var workingBaseID = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).workAt
@@ -264,6 +312,9 @@ class ParcelController {
                                 ]
                             }
                         }
+                    },
+                    {
+                        $skip: (page - 1) * pageSize
                     }
                 ])
                     .then(parcels => {
@@ -309,8 +360,13 @@ class ParcelController {
         }
     }
 
-    //[GET] /parcel/transaction-base/to-receiver/history
+    //[GET] /parcel/transaction-base/to-receiver/history?page=
     showToReceiverHistory(req, res, next) {
+        const pageSize = parseInt(process.env.PAGE_SIZE)
+        var page = req.query.page ? parseInt(req.query.page) : 1
+        page = isNaN(page) ? 1 : page
+        page = page < 1 ? 1 : page
+
         if (req.cookies.jwt) {
             var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
             var workingBaseID = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).workAt
@@ -335,6 +391,15 @@ class ParcelController {
                             ]
                         }
                     }
+                },
+                {
+                    $sort: {finishedDate: -1}
+                },
+                {
+                    $skip: (page - 1) * pageSize
+                },
+                {
+                    $limit: pageSize
                 }
             ])
                 .then(history => {
@@ -355,13 +420,21 @@ class ParcelController {
     [Concentration Base Staff Section]
     */
 
-    //[GET] /parcel/distribution-base/incoming/transaction-base
+    //[GET] /parcel/distribution-base/incoming/transaction-base?page=
     showTransactionBaseIncoming(req, res, next) {
+        const pageSize = parseInt(process.env.PAGE_SIZE)
+        var page = req.query.page ? parseInt(req.query.page) : 1
+        page = isNaN(page) ? 1 : page
+        page = page < 1 ? 1 : page
+
         if (req.cookies.jwt) {
             var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
             var workingBaseID = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).workAt
             if (userRole == 3) {
                 Parcels.find({status: 1, nextBase: workingBaseID, passedBases: {$size: 1}})
+                    .sort({_id: -1})
+                    .skip(((page - 1) * pageSize))
+                    .limit(pageSize)
                     .then(parcels => {
                         res.status(200).json({
                             parcels: multipleMongooseToObject(parcels)
@@ -403,13 +476,21 @@ class ParcelController {
         }
     }
 
-    //[GET] /parcel/distribution-base/incoming/distribution-base
+    //[GET] /parcel/distribution-base/incoming/distribution-base?page=
     showDistributionBaseIncoming(req, res, next) {
+        const pageSize = parseInt(process.env.PAGE_SIZE)
+        var page = req.query.page ? parseInt(req.query.page) : 1
+        page = isNaN(page) ? 1 : page
+        page = page < 1 ? 1 : page
+
         if (req.cookies.jwt) {
             var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
             var workingBaseID = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).workAt
             if (userRole == 3) {
                 Parcels.find({status: 1, nextBase: workingBaseID, passedBases: {$not: {$size: 1}}})
+                    .sort({_id: -1})
+                    .skip(((page - 1) * pageSize))
+                    .limit(pageSize)
                     .then(parcels => {
                         res.status(200).json({
                             parcels: multipleMongooseToObject(parcels)
@@ -450,8 +531,13 @@ class ParcelController {
         }
     }
 
-    //[GET] /parcel/distribution-base/to-transaction-base/in-queue
+    //[GET] /parcel/distribution-base/to-transaction-base/in-queue?page=
     showToTransactionBaseInQueue(req, res, next) {
+        const pageSize = parseInt(process.env.PAGE_SIZE)
+        var page = req.query.page ? parseInt(req.query.page) : 1
+        page = isNaN(page) ? 1 : page
+        page = page < 1 ? 1 : page
+
         if (req.cookies.jwt) {
             var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
             var workingBaseID = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).workAt
@@ -471,6 +557,10 @@ class ParcelController {
                         }
                     ]
                 })
+                .sort({_id: -1})
+                .skip(((page - 1) * pageSize))
+                .limit(pageSize)
+
                 const basesList = Bases.find({superiorBase: workingBaseID})
                 Promise.all([incomingParcels, basesList])
                     .then(([parcels, bases]) => {
@@ -513,8 +603,13 @@ class ParcelController {
         }
     }
 
-    //[GET] /parcel/distribution-base/to-distribution-base/in-queue
+    //[GET] /parcel/distribution-base/to-distribution-base/in-queue?page=?
     showToDestinedDistributionBase(req, res, next) {
+        const pageSize = parseInt(process.env.PAGE_SIZE)
+        var page = req.query.page ? parseInt(req.query.page) : 1
+        page = isNaN(page) ? 1 : page
+        page = page < 1 ? 1 : page
+
         if (req.cookies.jwt) {
             var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
             var workingBaseID = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).workAt
@@ -534,6 +629,10 @@ class ParcelController {
                         }
                     ]
                 })
+                .sort({_id: -1})
+                .skip(((page - 1) * pageSize))
+                .limit(pageSize)
+
                 const basesList = Bases.find({baseType: 0, _id: {$not: {$eq: workingBaseID}}})
                 Promise.all([incomingParcels, basesList])
                     .then(([parcels, bases]) => {
