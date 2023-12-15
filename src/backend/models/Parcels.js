@@ -16,6 +16,7 @@ const Parcels = new Schema({
     receiverName: {type: String, minLength: 2},
     receiverPhone: {type: String, minLength: 10, maxLength: 10},
     weight: {type: Number},
+    price: {type: Number},
     /**
      * Parcel status code:
      * 0: processing

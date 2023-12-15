@@ -3,7 +3,7 @@ const Actors = require('../models/Actors')
 const Bases = require('../models/Bases')
 const jwt = require('jsonwebtoken')
 const {multipleMongooseToObject, mongooseToObject} = require('../../backend/ulti/mongoose')
-const {getTotalStatistic, getBaseGeneralStatistic, getSentAndReceivedStatistic} = require('../middleware/statisticMiddleware')
+const {getTotalStatistic, getBaseGeneralStatistic, getFromSenderStatistic, getToReceiverStatistic} = require('../middleware/statisticMiddleware')
 class MyController {
     //[GET] /my/
     show(req, res, next) {
@@ -77,10 +77,10 @@ class MyController {
     //[GET] /my/statistic?id=
     showStatisticByBase(req, res, next) {
         if (req.cookies.jwt) {
-            var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
+            const userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
             const baseID = req.query.id
             if (req.query.id) {
-                if (userRole == 0 || userRole == 1) {
+                if (userRole == 0) {
                     var statistic
                     getBaseGeneralStatistic(baseID).then((result) => {
                         statistic = result
@@ -89,22 +89,57 @@ class MyController {
                             delivered: statistic.receivedParcels
                         })
                     })
-                } else if (userRole == 2) {
-                    var statistic
-                    getSentAndReceivedStatistic(baseID).then((result) => {
-                        statistic = result
-                        res.status(200).json({
-                            received: statistic.receivedParcels,
-                            delivered: statistic.deliveredParcels,
-                            success: statistic.successParcels,
-                            failed: statistic.failedParcels
-                        })
-                    })
                 } else {
                     res.status(403).json('Permission Denied')
                 }
             } else {
                 res.status(400).json("Must specify base id")
+            }
+        } else {
+            res.status(401).json('Permission Denied')
+        }
+    }
+
+    //[GET] /my/statistic/from-sender
+    showFromSenderStatistic(req, res, next) {
+        if (req.cookies.jwt) {
+            const userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
+            const userBaseID = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).workAt
+            if (userRole == 2) {
+                var statistic
+                getFromSenderStatistic(userBaseID).then((result) => {
+                    statistic = result
+                    res.status(200).json({
+                        received: statistic.receivedParcels,
+                        success: statistic.successParcels,
+                        failed: statistic.failedParcels
+                    })
+                })
+            } else {
+                res.status(403).json('Permission Denied')
+            }
+        } else {
+            res.status(401).json('Permission Denied')
+        }
+    }
+
+    //[GET] /my/statistic/to-receiver
+    showToReceiverStatistic(req, res, next) {
+        if (req.cookies.jwt) {
+            const userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
+            const userBaseID = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).workAt
+            if (userRole == 2) {
+                var statistic
+                getToReceiverStatistic(userBaseID).then((result) => {
+                    statistic = result
+                    res.status(200).json({
+                        received: statistic.receivedParcels,
+                        success: statistic.successParcels,
+                        failed: statistic.failedParcels
+                    })
+                })
+            } else {
+                res.status(403).json('Permission Denied')
             }
         } else {
             res.status(401).json('Permission Denied')

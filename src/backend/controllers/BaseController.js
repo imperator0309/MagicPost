@@ -6,33 +6,27 @@ const {multipleMongooseToObject, mongooseToObject} = require('../ulti/mongoose')
 require('dotenv').config()
 
 class BaseController {
-    //[GET] /base/view?page=
+    //[GET] /base/view?baseType=&page=
     viewBases(req, res, next) {
         const pageSize = parseInt(process.env.PAGE_SIZE)
         var page = req.query.page ? parseInt(req.query.page) : 0
         page = isNaN(page) ? 0 : page
         page = page < 0 ? 0 : page
 
+        const typeFilter = req.query.baseType ? (isNaN(parseInt(req.query.baseType)) ? [0, 1] : [parseInt(req.query.baseType)]) : [0, 1]
+
         if (req.cookies.jwt) {
             var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
             if (userRole == 0) {
-                const distributionBases = Bases.find({baseType: 0})
-                    .sort({_id: 1})
+                Bases.find({baseType: {$in: typeFilter}})
+                    .sort({_id: -1})
                     .skip((page * pageSize))
                     .limit(pageSize)
-
-                const transactionBases = Bases.find({baseType: 1})
-                    .sort({_id: 1})
-                    .skip((page * pageSize))
-                    .limit(pageSize)
-
-                Promise.all([distributionBases, transactionBases])
-                    .then(([distributionBases, transactionBases]) => {
+                    .then(base => {
                         res.status(200).json({
-                            distributionBases: multipleMongooseToObject(distributionBases),
-                            transactionBases: multipleMongooseToObject(transactionBases)
+                            base: multipleMongooseToObject(base)
                         })
-                    })    
+                    })   
             } else {
                 res.status(403).json('Permission Denied')
             }

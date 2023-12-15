@@ -7,19 +7,20 @@ require('dotenv').config()
 
 class AccountController {
 
-    //[GET] /account/view?page=
+    //[GET] /account/view?role=&page=
     view(req, res, next) {
         const pageSize = parseInt(process.env.PAGE_SIZE)
-        var page = req.query.page ? parseInt(req.query.page) : 0
-        page = isNaN(page) ? 0 : page
-        page = page < 0 ? 0 : page
-        
+        const page = req.query.page ? (isNaN(parseInt(req.query.page)) ? 0 : (parseInt(req.query.page) < 0 ? 0 : parseInt(req.query.page))) : 0
+
         if (req.cookies.jwt) {
             var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
             
             if (userRole == 0) {
-                Actors.find({role: [1, 2]})
-                    .sort({_id: 1})
+                const roleFilter = req.query.role ? (isNaN(parseInt(req.query.role)) ? [1, 2] : 
+                                    (parseInt(req.query.role) <= 2 && parseInt(req.query.role) >=1 ? [parseInt(req.query.role)] : [1, 2])) : [1, 2]
+
+                Actors.find({role: {$in: roleFilter}})
+                    .sort({_id: -1})
                     .skip((page * pageSize))
                     .limit(pageSize)
                     .then(actors => {

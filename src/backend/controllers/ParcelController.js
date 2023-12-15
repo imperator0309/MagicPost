@@ -41,9 +41,7 @@ class ParcelController {
     //[GET] /parcel/incoming/from-distribution-base?page=?
     showIncomingFromDistributionBase(req, res, next) {
         const pageSize = parseInt(process.env.PAGE_SIZE)
-        var page = req.query.page ? parseInt(req.query.page) : 0
-        page = isNaN(page) ? 0 : page
-        page = page < 0 ? 0 : page
+        const page = req.query.page ? (isNaN(parseInt(req.query.page)) ? 0 : (parseInt(req.query.page) < 0 ? 0 : parseInt(req.query.page))) : 0
 
         if (req.cookies.jwt) {
             var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
@@ -69,9 +67,7 @@ class ParcelController {
     //[GET] /parcel/incoming/from-transaction-base?page=
     showIncomingFromTransactionBase(req, res, next) {
         const pageSize = parseInt(process.env.PAGE_SIZE)
-        var page = req.query.page ? parseInt(req.query.page) : 0
-        page = isNaN(page) ? 0 : page
-        page = page < 0 ? 0 : page
+        const page = req.query.page ? (isNaN(parseInt(req.query.page)) ? 0 : (parseInt(req.query.page) < 0 ? 0 : parseInt(req.query.page))) : 0
 
         if (req.cookies.jwt) {
             var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
@@ -123,9 +119,7 @@ class ParcelController {
     //[GET] /parcel/to-distribution-base?page=?
     showToDistributionBase(req, res, next) {
         const pageSize = parseInt(process.env.PAGE_SIZE)
-        var page = req.query.page ? parseInt(req.query.page) : 0
-        page = isNaN(page) ? 0 : page
-        page = page < 0 ? 0 : page
+        const page = req.query.page ? (isNaN(parseInt(req.query.page)) ? 0 : (parseInt(req.query.page) < 0 ? 0 : parseInt(req.query.page))) : 0
 
         if (req.cookies.jwt) {
             var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
@@ -215,9 +209,7 @@ class ParcelController {
     //[GET] /parcel/to-transaction-base?page=
     showToTransactionBase(req, res, next) {
         const pageSize = parseInt(process.env.PAGE_SIZE)
-        var page = req.query.page ? parseInt(req.query.page) : 0
-        page = isNaN(page) ? 0 : page
-        page = page < 0 ? 0 : page
+        const page = req.query.page ? (isNaN(parseInt(req.query.page)) ? 0 : (parseInt(req.query.page) < 0 ? 0 : parseInt(req.query.page))) : 0
 
         if (req.cookies.jwt) {
             var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
@@ -284,12 +276,10 @@ class ParcelController {
         }
     }
 
-    //[GET] /parcel/to-receiver?page=
+    //[GET] /parcel/to-receiver/in-queue?page=
     showToReceiver(req, res, next) {
         const pageSize = parseInt(process.env.PAGE_SIZE)
-        var page = req.query.page ? parseInt(req.query.page) : 0
-        page = isNaN(page) ? 0 : page
-        page = page < 0 ? 0 : page
+        const page = req.query.page ? (isNaN(parseInt(req.query.page)) ? 0 : (parseInt(req.query.page) < 0 ? 0 : parseInt(req.query.page))) : 0
 
         if (req.cookies.jwt) {
             var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
@@ -338,7 +328,7 @@ class ParcelController {
         }
     }
 
-    //[PUT] /parcel/to-receiver/in-queue/in-queue
+    //[PUT] /parcel/to-receiver/in-queue
     forwardToReceiver(req, res, next) {
         if (req.cookies.jwt) {
             var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
@@ -364,9 +354,7 @@ class ParcelController {
     //[GET] /parcel/to-receiver/delivering?page=
     showToReceiverDelivering(req, res, next) {
         const pageSize = parseInt(process.env.PAGE_SIZE)
-        var page = req.query.page ? parseInt(req.query.page) : 0
-        page = isNaN(page) ? 0 : page
-        page = page < 0 ? 0 : page
+        const page = req.query.page ? (isNaN(parseInt(req.query.page)) ? 0 : (parseInt(req.query.page) < 0 ? 0 : parseInt(req.query.page))) : 0
 
         if (req.cookies.jwt) {
             var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole

@@ -22,7 +22,8 @@ module.exports = {
                 {
                     $group: {
                         _id: "$month",
-                        count: { $sum: 1}
+                        count: { $sum: 1},
+                        totalPrice: {$sum: "$price"}
                     }
                 },
                 {
@@ -45,7 +46,8 @@ module.exports = {
                 {
                     $group: {
                         _id: "$month",
-                        count: { $sum: 1}
+                        count: { $sum: 1},
+                        totalPrice: {$sum: "$price"}
                     }
                 },
                 {
@@ -57,7 +59,7 @@ module.exports = {
                 {
                     $match: {
                         "passedBases.0.timestamp": { $regex: `^${currentYear}` },
-                        status: 3
+                        status: 4
                     }
                 },
                 {
@@ -68,7 +70,8 @@ module.exports = {
                 {
                     $group: {
                         _id: "$month",
-                        count: { $sum: 1}
+                        count: { $sum: 1},
+                        totalPrice: {$sum: "$price"}
                     }
                 },
                 {
@@ -108,7 +111,8 @@ module.exports = {
                 {
                     $group: {
                       _id: { $month: { $toDate: '$passedBases.timestamp' } },
-                      count: { $sum: 1 }
+                      count: { $sum: 1 },
+                      totalPrice: {$sum: "$price"}
                     }
                 },
                 {
@@ -132,7 +136,8 @@ module.exports = {
                 {
                     $group: {
                       _id: { $month: { $toDate: '$passedBases.timestamp' } },
-                      count: { $sum: 1 }
+                      count: { $sum: 1 },
+                      totalPrice: {$sum: "$price"}
                     }
                 },
                 {
@@ -152,7 +157,7 @@ module.exports = {
         })
     },
     
-    getSentAndReceivedStatistic: function(baseID) {
+    getFromSenderStatistic: function(baseID) {
         return new Promise((resolve, reject) => {
             const currentYear = (new Date()).getFullYear()
     
@@ -171,22 +176,89 @@ module.exports = {
                 {
                     $group: {
                         _id: "$month",
-                        count: { $sum: 1}
+                        count: { $sum: 1},
+                        totalPrice: {$sum: "$price"}
                     }
                 },
                 {
                     $sort: {_id: 1}
                 }
             ])
+
+            const successParcels = Parcels.aggregate([
+                {
+                    $match: {
+                        "passedBases.0.timestamp": { $regex: `^${currentYear}` },
+                        "passedBases.0.id": baseID,
+                        status: 3
+                    }
+                },
+                {
+                    $project: {
+                        month: {$substr: [{ $arrayElemAt: ["$passedBases.timestamp", 0]}, 5, 2]}
+                    }
+                },
+                {
+                    $group: {
+                        _id: "$month",
+                        count: { $sum: 1},
+                        totalPrice: {$sum: "$price"}
+                    }   
+                },
+                {
+                    $sort: {_id: 1}
+                }
+            ])
+
+            const failedParcels = Parcels.aggregate([
+                {
+                    $match: {
+                        "passedBases.0.timestamp": { $regex: `^${currentYear}` },
+                        "passedBases.0.id": baseID,
+                        status: 4
+                    }
+                },
+                {
+                    $project: {
+                        month: {$substr: [{ $arrayElemAt: ["$passedBases.timestamp", 0]}, 5, 2]}
+                    }
+                },
+                {
+                    $group: {
+                        _id: "$month",
+                        count: { $sum: 1},
+                        totalPrice: {$sum: "$price"}
+                    }   
+                },
+                {
+                    $sort: {_id: 1}
+                }
+            ])            
     
-            const deliveredParcels = Parcels.aggregate([
+            Promise.all([receivedParcels, successParcels, failedParcels])
+                .then((results) => {
+                    const [receivedParcels, successParcels, failedParcels] = results
+                    const statistic = {
+                        receivedParcels: receivedParcels,
+                        successParcels: successParcels,
+                        failedParcels: failedParcels
+                    }
+                    resolve(statistic)
+                })
+        })
+    },
+
+    getToReceiverStatistic: function(baseID) {
+        return new Promise((resolve, reject) => {
+            const currentYear = (new Date()).getFullYear()
+    
+            const receivedParcels = Parcels.aggregate([
                 {
                     $match: {
                         $expr: {
                             $and: [
                                 { $eq: [{$arrayElemAt: ["$passedBases.id", -1]}, baseID] },
                                 { $eq: [{$toInt: {$substr: [{$arrayElemAt: ["$passedBases.timestamp", -1]}, 0, 4]}}, currentYear] },
-                                { $gt: ["$status", 0] }
                             ]
                         }
                     }
@@ -199,8 +271,9 @@ module.exports = {
                 {
                     $group: {
                         _id: "$month",
-                        count: { $sum: 1}
-                    }   
+                        count: { $sum: 1},
+                        totalPrice: {$sum: "$price"}
+                    }
                 },
                 {
                     $sort: {_id: 1}
@@ -212,7 +285,7 @@ module.exports = {
                     $match: {
                         $expr: {
                             $and: [
-                                { $eq: [{$arrayElemAt: ["$passedBases.id", 0]}, baseID] },
+                                { $eq: [{$arrayElemAt: ["$passedBases.id", -1]}, baseID] },
                                 { $eq: [{$toInt: {$substr: [{$arrayElemAt: ["$passedBases.timestamp", -1]}, 0, 4]}}, currentYear] },
                                 { $eq: ["$status", 3] }
                             ]
@@ -227,7 +300,8 @@ module.exports = {
                 {
                     $group: {
                         _id: "$month",
-                        count: { $sum: 1}
+                        count: { $sum: 1},
+                        totalPrice: {$sum: "$price"}
                     }   
                 },
                 {
@@ -241,7 +315,7 @@ module.exports = {
                         $expr: {
                             $and: [
                                 { $eq: [{$arrayElemAt: ["$passedBases.id", -1]}, baseID] },
-                                // { $eq: [{$toInt: {$substr: [{$arrayElemAt: ["$passedBases.timestamp", -1]}, 0, 4]}}, currentYear] },
+                                { $eq: [{$toInt: {$substr: [{$arrayElemAt: ["$passedBases.timestamp", -1]}, 0, 4]}}, currentYear] },
                                 { $eq: ["$status", 4] }
                             ]
                         }
@@ -255,7 +329,8 @@ module.exports = {
                 {
                     $group: {
                         _id: "$month",
-                        count: { $sum: 1}
+                        count: { $sum: 1},
+                        totalPrice: {$sum: "$price"}
                     }   
                 },
                 {
@@ -263,12 +338,11 @@ module.exports = {
                 }
             ])            
     
-            Promise.all([receivedParcels, deliveredParcels, successParcels, failedParcels])
+            Promise.all([receivedParcels, successParcels, failedParcels])
                 .then((results) => {
-                    const [receivedParcels, deliveredParcels, successParcels, failedParcels] = results
+                    const [receivedParcels, successParcels, failedParcels] = results
                     const statistic = {
                         receivedParcels: receivedParcels,
-                        deliveredParcels: deliveredParcels,
                         successParcels: successParcels,
                         failedParcels: failedParcels
                     }

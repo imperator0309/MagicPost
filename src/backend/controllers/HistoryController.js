@@ -5,18 +5,15 @@ const jwt = require('jsonwebtoken')
 
 class HistoryController {
 
-    //[GET] /parcel/history/general?status=?&start=?&end=?&page=
+    //[GET] /parcel/history/general?status=?&start=?&end=?&page=&sort=?
     showHistory(req, res, next) {
         const pageSize = parseInt(process.env.PAGE_SIZE)
-        var page = req.query.page ? parseInt(req.query.page) : 0
-        page = isNaN(page) ? 0 : page
-        page = page < 0 ? 0 : page
-        var start = req.query.start ? req.query.start : "2000-01-01"
-        var end = req.query.end ? req.query.end : "3000-12-31"
-        var statusFilter = req.query.status ? [parseInt(req.query.status)] : [0, 1, 2, 3, 4]
+        const page = req.query.page ? (isNaN(parseInt(req.query.page)) ? 0 : (parseInt(req.query.page) < 0 ? 0 : parseInt(req.query.page))) : 0
+        const sort = req.query.sort ? (req.query.sort == 'asc' ? 1 : -1) : -1
 
-        start = isNaN(new Date(start)) ? new Date("2000-01-01").toJSON() : new Date(start).toJSON()
-        end = isNaN(new Date(end)) ? new Date("3000-12-31").toJSON() : new Date(end).toJSON()
+        const start = (req.query.start ? (isNaN(new Date(req.query.start)) ? new Date("2000-01-01") : new Date(req.query.start)) : new Date("2000-01-01")).toJSON()
+        const end = (req.query.end ? (isNaN(new Date(req.query.end)) ? new Date("3000-12-31") : new Date(req.query.end)) : new Date("3000-12-31")).toJSON()
+        const statusFilter = req.query.status ? [parseInt(req.query.status)] : [0, 1, 2, 3, 4]
 
         if (req.cookies.jwt) {
             var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
@@ -37,7 +34,7 @@ class HistoryController {
                         }
                     },
                     {
-                        $sort: {"passedBases.timestamp": -1}
+                        $sort: {"passedBases.timestamp": sort}
                     },
                     {
                         $skip: page * pageSize
@@ -62,16 +59,12 @@ class HistoryController {
     //[GET] /parcel/history/to-receiver??status=?&start=?&end=?&page=
     showToReceiverHistory(req, res, next) {
         const pageSize = parseInt(process.env.PAGE_SIZE)
-        var page = req.query.page ? parseInt(req.query.page) : 0
-        page = isNaN(page) ? 0 : page
-        page = page < 0 ? 0 : page
+        const page = req.query.page ? (isNaN(parseInt(req.query.page)) ? 0 : (parseInt(req.query.page) < 0 ? 0 : parseInt(req.query.page))) : 0
+        const sort = req.query.sort ? (req.query.sort == 'asc' ? 1 : -1) : -1
 
-        var start = req.query.start ? req.query.start : "2000-01-01"
-        var end = req.query.end ? req.query.end : "3000-12-31"
-        var statusFilter = req.query.status ? [parseInt(req.query.status)] : [0, 1, 2, 3, 4]
-
-        start = isNaN(new Date(start)) ? new Date("2000-01-01").toJSON() : new Date(start).toJSON()
-        end = isNaN(new Date(end)) ? new Date("3000-12-31").toJSON() : new Date(end).toJSON()
+        const start = (req.query.start ? (isNaN(new Date(req.query.start)) ? new Date("2000-01-01") : new Date(req.query.start)) : new Date("2000-01-01")).toJSON()
+        const end = (req.query.end ? (isNaN(new Date(req.query.end)) ? new Date("3000-12-31") : new Date(req.query.end)) : new Date("3000-12-31")).toJSON()
+        const statusFilter = req.query.status ? [parseInt(req.query.status)] : [0, 1, 2, 3, 4]
 
         if (req.cookies.jwt) {
             var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
@@ -91,7 +84,7 @@ class HistoryController {
                     }
                 },
                 {
-                    $sort: {finishedDate: -1}
+                    $sort: {finishedDate: sort}
                 },
                 {
                     $skip: page * pageSize
@@ -117,16 +110,12 @@ class HistoryController {
     //[GET] /parcel/history/from-receiver??status=?&start=?&end=?&page=
     showFromReceiverHistory(req, res, next) {
         const pageSize = parseInt(process.env.PAGE_SIZE)
-        var page = req.query.page ? parseInt(req.query.page) : 0
-        page = isNaN(page) ? 0 : page
-        page = page < 0 ? 0 : page
+        const page = req.query.page ? (isNaN(parseInt(req.query.page)) ? 0 : (parseInt(req.query.page) < 0 ? 0 : parseInt(req.query.page))) : 0
+        const sort = req.query.sort ? (req.query.sort == 'asc' ? 1 : -1) : -1
 
-        var start = req.query.start ? req.query.start : "2000-01-01"
-        var end = req.query.end ? req.query.end : "3000-12-31"
-        var statusFilter = req.query.status ? [parseInt(req.query.status)] : [0, 1, 2, 3, 4]
-
-        start = isNaN(new Date(start)) ? new Date("2000-01-01").toJSON() : new Date(start).toJSON()
-        end = isNaN(new Date(end)) ? new Date("3000-12-31").toJSON() : new Date(end).toJSON()
+        const start = (req.query.start ? (isNaN(new Date(req.query.start)) ? new Date("2000-01-01") : new Date(req.query.start)) : new Date("2000-01-01")).toJSON()
+        const end = (req.query.end ? (isNaN(new Date(req.query.end)) ? new Date("3000-12-31") : new Date(req.query.end)) : new Date("3000-12-31")).toJSON()
+        const statusFilter = req.query.status ? [parseInt(req.query.status)] : [0, 1, 2, 3, 4]
 
         if (req.cookies.jwt) {
             var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
@@ -146,7 +135,7 @@ class HistoryController {
                     }
                 },
                 {
-                    $sort: {finishedDate: -1}
+                    $sort: {finishedDate: sort}
                 },
                 {
                     $skip: page * pageSize
