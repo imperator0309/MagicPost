@@ -10,9 +10,9 @@ class AccountController {
     //[GET] /account/view?page=
     view(req, res, next) {
         const pageSize = parseInt(process.env.PAGE_SIZE)
-        var page = req.query.page ? parseInt(req.query.page) : 1
-        page = isNaN(page) ? 1 : page
-        page = page < 1 ? 1 : page
+        var page = req.query.page ? parseInt(req.query.page) : 0
+        page = isNaN(page) ? 0 : page
+        page = page < 0 ? 0 : page
         
         if (req.cookies.jwt) {
             var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
@@ -20,7 +20,7 @@ class AccountController {
             if (userRole == 0) {
                 Actors.find({role: [1, 2]})
                     .sort({_id: 1})
-                    .skip(((page - 1) * pageSize))
+                    .skip((page * pageSize))
                     .limit(pageSize)
                     .then(actors => {
                         res.status(200).json({
@@ -30,7 +30,7 @@ class AccountController {
             } else if (userRole == 1 || userRole == 2){
                 var userBaseID = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).workAt
                 Actors.find({role: [3, 4], workAt: userBaseID})
-                    .skip(((page - 1) * pageSize))
+                    .skip((page * pageSize))
                     .limit(pageSize)
                     .then(actors => {
                         res.status(200).json({

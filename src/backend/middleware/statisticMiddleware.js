@@ -30,7 +30,30 @@ module.exports = {
                 }
             ])
     
-            const receivedParcels = Parcels.aggregate([
+            const successParcels = Parcels.aggregate([
+                {
+                    $match: {
+                        "passedBases.0.timestamp": { $regex: `^${currentYear}` },
+                        status: 3
+                    }
+                },
+                {
+                    $project: {
+                        month: {$substr: [{ $arrayElemAt: ["$passedBases.timestamp", 0]}, 5, 2]}
+                    }
+                },
+                {
+                    $group: {
+                        _id: "$month",
+                        count: { $sum: 1}
+                    }
+                },
+                {
+                    $sort: {_id: 1}
+                }
+            ])
+
+            const failedParcels = Parcels.aggregate([
                 {
                     $match: {
                         "passedBases.0.timestamp": { $regex: `^${currentYear}` },
@@ -53,12 +76,13 @@ module.exports = {
                 }
             ])
     
-            Promise.all([totalParcels, receivedParcels])
+            Promise.all([totalParcels, successParcels, failedParcels])
                 .then((results) => {
-                    const [totalParcels, receivedParcels] = results
+                    const [totalParcels, successParcels, failedParcels] = results
                     const statistic = {
                         totalParcels: totalParcels,
-                        receivedParcels: receivedParcels
+                        successParcels: successParcels,
+                        failedParcels: failedParcels
                     }
                     resolve(statistic)
                 })
@@ -92,7 +116,7 @@ module.exports = {
                 }
             ])
     
-            const receivedParcels = Parcels.aggregate([
+            const deliveredParcels = Parcels.aggregate([
                 {
                     $unwind: "$passedBases"
                 },
@@ -116,12 +140,12 @@ module.exports = {
                 }
             ])
     
-            Promise.all([totalParcels, receivedParcels])
+            Promise.all([totalParcels, deliveredParcels])
                 .then((results) => {
-                    const [totalParcels, receivedParcels] = results
+                    const [totalParcels, deliveredParcels] = results
                     const statistic = {
                         totalParcels: totalParcels,
-                        receivedParcels: receivedParcels
+                        deliveredParcels: deliveredParcels
                     }
                     resolve(statistic)
                 })
@@ -132,7 +156,7 @@ module.exports = {
         return new Promise((resolve, reject) => {
             const currentYear = (new Date()).getFullYear()
     
-            const totalParcels = Parcels.aggregate([
+            const receivedParcels = Parcels.aggregate([
                 {
                     $match: {
                         "passedBases.0.timestamp": { $regex: `^${currentYear}` },
@@ -155,49 +179,98 @@ module.exports = {
                 }
             ])
     
-            const receivedParcels = Parcels.aggregate([
+            const deliveredParcels = Parcels.aggregate([
                 {
                     $match: {
-                        "passedBases": {
-                            $elemMatch: {
-                                $expr: {
-                                    $eq: [
-                                        { $arrayElemAt: ["$passedBases.id", -1] },
-                                        baseID
-                                    ]
-                                },
-                                $expr: {
-                                    $eq: [
-                                        {$toInt: {$substr: [{$arrayElemAt: ["$passedBases.timestamp", -1]}, 0, 4]}},
-                                        currentYear
-                                    ]
-                                }
-                            }
+                        $expr: {
+                            $and: [
+                                { $eq: [{$arrayElemAt: ["$passedBases.id", -1]}, baseID] },
+                                { $eq: [{$toInt: {$substr: [{$arrayElemAt: ["$passedBases.timestamp", -1]}, 0, 4]}}, currentYear] },
+                                { $gt: ["$status", 0] }
+                            ]
                         }
                     }
                 },
                 {
                     $project: {
-                        month: { $month: { $dateFromString: { dateString: { $arrayElemAt: ["$passedBases.timestamp", -1] } } } }
+                        month: {$substr: [{ $arrayElemAt: ["$passedBases.timestamp", 0]}, 5, 2]}
                     }
                 },
                 {
                     $group: {
                         _id: "$month",
                         count: { $sum: 1}
-                    }
+                    }   
                 },
                 {
                     $sort: {_id: 1}
                 }
             ])
+
+            const successParcels = Parcels.aggregate([
+                {
+                    $match: {
+                        $expr: {
+                            $and: [
+                                { $eq: [{$arrayElemAt: ["$passedBases.id", 0]}, baseID] },
+                                { $eq: [{$toInt: {$substr: [{$arrayElemAt: ["$passedBases.timestamp", -1]}, 0, 4]}}, currentYear] },
+                                { $eq: ["$status", 3] }
+                            ]
+                        }
+                    }
+                },
+                {
+                    $project: {
+                        month: {$substr: [{ $arrayElemAt: ["$passedBases.timestamp", 0]}, 5, 2]}
+                    }
+                },
+                {
+                    $group: {
+                        _id: "$month",
+                        count: { $sum: 1}
+                    }   
+                },
+                {
+                    $sort: {_id: 1}
+                }
+            ])
+
+            const failedParcels = Parcels.aggregate([
+                {
+                    $match: {
+                        $expr: {
+                            $and: [
+                                { $eq: [{$arrayElemAt: ["$passedBases.id", -1]}, baseID] },
+                                // { $eq: [{$toInt: {$substr: [{$arrayElemAt: ["$passedBases.timestamp", -1]}, 0, 4]}}, currentYear] },
+                                { $eq: ["$status", 4] }
+                            ]
+                        }
+                    }
+                },
+                {
+                    $project: {
+                        month: {$substr: [{ $arrayElemAt: ["$passedBases.timestamp", 0]}, 5, 2]}
+                    }
+                },
+                {
+                    $group: {
+                        _id: "$month",
+                        count: { $sum: 1}
+                    }   
+                },
+                {
+                    $sort: {_id: 1}
+                }
+            ])            
     
-            Promise.all([totalParcels, receivedParcels])
+            Promise.all([receivedParcels, deliveredParcels, successParcels, failedParcels])
                 .then((results) => {
-                    const [totalParcels, receivedParcels] = results
+                    const [receivedParcels, deliveredParcels, successParcels, failedParcels] = results
                     const statistic = {
-                        totalParcels: totalParcels,
-                        receivedParcels: receivedParcels
+                        receivedParcels: receivedParcels,
+                        deliveredParcels: deliveredParcels,
+                        successParcels: successParcels,
+                        failedParcels: failedParcels
                     }
                     resolve(statistic)
                 })

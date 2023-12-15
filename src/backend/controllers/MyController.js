@@ -27,7 +27,8 @@ class MyController {
                                 distributionBases: multipleMongooseToObject(distributionBases),
                                 transactionBases: multipleMongooseToObject(transactionBases),
                                 total: statistic.totalParcels,
-                                received: statistic.receivedParcels
+                                success: statistic.successParcels,
+                                failed: statistic.failedParcels
                             })
                         })
                 })
@@ -48,7 +49,7 @@ class MyController {
                                 role: user.role,
                                 baseLocation: base.baseLocation,
                                 total: statistic.totalParcels,
-                                delivered: statistic.receivedParcels
+                                delivered: statistic.deliveredParcels
                             })
                         })
                 })
@@ -78,27 +79,32 @@ class MyController {
         if (req.cookies.jwt) {
             var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
             const baseID = req.query.id
-            if (userRole == 0 || userRole == 1) {
-                var statistic
-                getBaseGeneralStatistic(baseID).then((result) => {
-                    statistic = result
-                    res.status(200).json({
-                        total: statistic.totalParcels,
-                        delivered: statistic.receivedParcels
+            if (req.query.id) {
+                if (userRole == 0 || userRole == 1) {
+                    var statistic
+                    getBaseGeneralStatistic(baseID).then((result) => {
+                        statistic = result
+                        res.status(200).json({
+                            total: statistic.totalParcels,
+                            delivered: statistic.receivedParcels
+                        })
                     })
-                })
-            } else if (userRole == 2) {
-                var statistic
-                getSentAndReceivedStatistic(baseID).then((result) => {
-                    statistic = result
-                    res.status(200).json({
-                        total: statistic.totalParcels,
-                        received: statistic.receivedParcels
+                } else if (userRole == 2) {
+                    var statistic
+                    getSentAndReceivedStatistic(baseID).then((result) => {
+                        statistic = result
+                        res.status(200).json({
+                            received: statistic.receivedParcels,
+                            delivered: statistic.deliveredParcels,
+                            success: statistic.successParcels,
+                            failed: statistic.failedParcels
+                        })
                     })
-                })
-
+                } else {
+                    res.status(403).json('Permission Denied')
+                }
             } else {
-                res.status(403).json('Permission Denied')
+                res.status(400).json("Must specify base id")
             }
         } else {
             res.status(401).json('Permission Denied')
