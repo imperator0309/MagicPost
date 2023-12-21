@@ -50,5 +50,11 @@ class HomeController {
                 }
             })
     }
+
+    //[POST] /logout
+    logout(req, res, next) {
+        res.clearCookie('jwt')
+        res.status(200).json("Logout successfully")
+    }
 }
 module.exports = new HomeController
