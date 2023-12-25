@@ -1,8 +1,9 @@
 const Parcels = require('../models/Parcels')
 const Actors = require('../models/Actors')
 const jwt = require('jsonwebtoken')
-const {multipleMongooseToObject, mongooseToObject} = require('../../backend/ulti/mongoose')
+const {mongooseToObject} = require('../../backend/ulti/mongoose')
 const Bases = require('../models/Bases')
+require('dotenv').config()
 
 class HomeController {
     //[GET] /search?id=
@@ -38,6 +39,10 @@ class HomeController {
                         workAt: actor.workAt
                     }, process.env.TOKEN_KEY)
 
+                    res.set({
+                        "Access-Control-Allow-Origin": `http://localhost:${process.env.CLIENT_PORT}`,
+                        "Access-Control-Allow-Credentials": true
+                    })
                     res.cookie('jwt', cookie, {maxAge: 90000, httpOnly: false})
                     res.status(200).json({
                         role: actor.role
