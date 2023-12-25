@@ -63,6 +63,9 @@ class BaseController {
                 const base = new Bases(baseData)
                 base.save()
                     .then(res.status(200).json('Create Base Successfully'))
+                    .catch(err => {
+                        res.status(500).json("Data invalid")
+                    })
             } else {
                 res.status(403).json('Permission Denied')
             }
@@ -82,6 +85,12 @@ class BaseController {
                             .then(() => {
                                 res.status(200).json({message: 'Delete Bases Successfully'})
                             })
+                            .catch(err => {
+                                res.status(500).json("Data invalid")
+                            })
+                    })
+                    .catch(err => {
+                        res.status(500).json("Data invalid")
                     })
             } else {
                 res.status(403).json({message: 'Permission Denied'})

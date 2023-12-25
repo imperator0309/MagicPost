@@ -90,6 +90,12 @@ class AccountController {
                                             .then(() => {
                                                 res.status(200).json('Create Account Successfully')
                                             })
+                                            .catch(err => {
+                                                res.status(500).json("Data invalid")
+                                            })
+                                    })
+                                    .catch(err => {
+                                        res.status(500).json("Data invalid")
                                     })
                             } else {
                                 var userBaseID = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).workAt
@@ -102,6 +108,12 @@ class AccountController {
                                             .then(() => {
                                                 res.status(200).json('Create Account Successfully')
                                             })
+                                            .catch(err => {
+                                                res.status(500).json("Data invalid")
+                                            })
+                                    })
+                                    .catch(err => {
+                                        res.status(500).json("Data invalid")
                                     })
                             }
                         }
@@ -148,7 +160,16 @@ class AccountController {
                                         .then(() => {
                                             res.status(200).json('Updated account successfully')
                                         })
+                                        .catch(err => {
+                                            res.status(500).json("Data invalid")
+                                        })
                                 })
+                                .catch(err => {
+                                    res.status(500).json("Data invalid")
+                                })
+                        })
+                        .catch(err => {
+                            res.status(500).json("Data invalid")
                         })
                 } else {
                     Actors.updateOne(
@@ -156,6 +177,9 @@ class AccountController {
                         {$set: {name: req.body.name, username: req.body.username, password: req.body.password}})
                         .then(() => {
                             res.status(200).json('Updated account successfully')
+                        })
+                        .catch(err => {
+                            res.status(500).json("Data invalid")
                         })
                 }
             } else {
@@ -178,13 +202,22 @@ class AccountController {
                                 .then(() => {
                                     res.status(200).json({message: 'Delete Accounts Successfully'})
                                 })
+                                .catch(err => {
+                                    res.status(500).json("Data invalid")
+                                })
                         } else {
                             var userBaseID = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).workAt
                             Bases.updateOne({_id: userBaseID}, {$pull: {StaffIDs: {$in: req.body.ids}}})
                             .then(() => {
                                 res.status(200).json({message: 'Delete Account Successfully'})
                             })
+                            .catch(err => {
+                                res.status(500).json("Data invalid")
+                            })
                         }
+                    })
+                    .catch(err => {
+                        res.status(500).json("Data invalid")
                     })
             } else {
                 res.status(403).json({message: 'Permission Denied'})

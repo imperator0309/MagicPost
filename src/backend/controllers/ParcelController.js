@@ -29,6 +29,9 @@ class ParcelController {
                             .then(() => {
                                 res.status(200).json("Create new parcel successfully")
                             })
+                            .catch(err => {
+                                res.status(500).json("Data invalid")
+                            })
                         })
             } else {
                 res.status(403).json("Permission denied")
@@ -107,6 +110,9 @@ class ParcelController {
                             .then(() => {
                                 res.status(200).json("Confirmed incoming parcels successfully")
                             })
+                            .catch(err => {
+                                res.status(500).json("Data invalid")
+                            })
                     })
             } else {
                 res.status(403).json("Permission denied")
@@ -183,6 +189,9 @@ class ParcelController {
                             .then(() => {
                                 res.status(200).json("Create forwarding successfully")
                             })
+                            .catch(err => {
+                                res.status(500).json("Data invalid")
+                            })
                     })
             } else if (userRole == 3) {
                 Parcels.updateMany({_id: {$in: req.body.parcelIDs}},
@@ -197,6 +206,9 @@ class ParcelController {
                     })
                     .then(() => {
                         res.status(200).json("Sent to distribution base successfully")
+                    })
+                    .catch(err => {
+                        res.status(500).json("Data invalid")
                     })
             }  else {
                 res.status(403).json("Permission denied")
@@ -267,6 +279,9 @@ class ParcelController {
                     })
                     .then(() => {
                         res.status(200).json("Sent to transaction base successfully")
+                    })
+                    .catch(err => {
+                        res.status(500).json("Data invalid")
                     })
             } else {
                 res.status(403).json("Permission denied")
@@ -343,6 +358,9 @@ class ParcelController {
                         .then(() => {
                             res.status(200).json("Create Parcels sent to receiver successfully")
                         })
+                        .catch(err => {
+                            res.status(500).json("Data invalid")
+                        })
             } else {
                 res.status(403).json("Permission denied")
             }
@@ -414,12 +432,18 @@ class ParcelController {
                         .then(() => {
                             res.status(200).json("Confirmed parcels successfully")
                         })
+                        .catch(err => {
+                            res.status(500).json("Data invalid")
+                        })
 
                 } else if (req.body.status == 4) {
                     var canceledDate = (new Date()).toJSON()
                     Parcels.updateMany({_id: {$in: req.body.parcelIDs}}, {$set: {status: req.body.status, finishedDate: canceledDate}})
                         .then(() => {
                             res.status(200).json("Confirmed parcels successfully")
+                        })
+                        .catch(err => {
+                            res.status(500).json("Data invalid")
                         })
                 } else {
                     res.status(400).json("Invalid Status")
