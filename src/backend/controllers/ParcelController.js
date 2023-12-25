@@ -9,6 +9,10 @@ class ParcelController {
 
     //[POST] /parcel/create
     createParcel(req, res, next) {
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+        res.setHeader('Access-Control-Allow-Credentials', true);
         if (req.cookies.jwt) {
             var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
             var workingBaseID = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).workAt
@@ -43,6 +47,10 @@ class ParcelController {
 
     //[GET] /parcel/incoming/from-distribution-base?page=?
     showIncomingFromDistributionBase(req, res, next) {
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+        res.setHeader('Access-Control-Allow-Credentials', true);
         const pageSize = parseInt(process.env.PAGE_SIZE)
         const page = req.query.page ? (isNaN(parseInt(req.query.page)) ? 0 : (parseInt(req.query.page) < 0 ? 0 : parseInt(req.query.page))) : 0
 
@@ -69,6 +77,10 @@ class ParcelController {
 
     //[GET] /parcel/incoming/from-transaction-base?page=
     showIncomingFromTransactionBase(req, res, next) {
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+        res.setHeader('Access-Control-Allow-Credentials', true);
         const pageSize = parseInt(process.env.PAGE_SIZE)
         const page = req.query.page ? (isNaN(parseInt(req.query.page)) ? 0 : (parseInt(req.query.page) < 0 ? 0 : parseInt(req.query.page))) : 0
 
@@ -95,6 +107,10 @@ class ParcelController {
 
     //[PUT] /parcel/incoming
     confirmIncomingParcels(req, res, next) {
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+        res.setHeader('Access-Control-Allow-Credentials', true);
         if (req.cookies.jwt) {
             var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
             var workingBaseID = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).workAt
@@ -124,6 +140,10 @@ class ParcelController {
 
     //[GET] /parcel/to-distribution-base?page=?
     showToDistributionBase(req, res, next) {
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+        res.setHeader('Access-Control-Allow-Credentials', true);
         const pageSize = parseInt(process.env.PAGE_SIZE)
         const page = req.query.page ? (isNaN(parseInt(req.query.page)) ? 0 : (parseInt(req.query.page) < 0 ? 0 : parseInt(req.query.page))) : 0
 
@@ -168,7 +188,11 @@ class ParcelController {
     }
 
     //[PUT] /parcel/to-distribution-base
-    forwardToDistributionBase(req, res, next) { 
+    forwardToDistributionBase(req, res, next) {
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+        res.setHeader('Access-Control-Allow-Credentials', true); 
         if (req.cookies.jwt) {
             var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
             var workingBaseID = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).workAt
@@ -220,6 +244,10 @@ class ParcelController {
 
     //[GET] /parcel/to-transaction-base?page=
     showToTransactionBase(req, res, next) {
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+        res.setHeader('Access-Control-Allow-Credentials', true);
         const pageSize = parseInt(process.env.PAGE_SIZE)
         const page = req.query.page ? (isNaN(parseInt(req.query.page)) ? 0 : (parseInt(req.query.page) < 0 ? 0 : parseInt(req.query.page))) : 0
 
@@ -264,6 +292,10 @@ class ParcelController {
 
     //[PUT] /parcel/to-transaction-base
     forwardToTransactionBase(req, res, next) {
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+        res.setHeader('Access-Control-Allow-Credentials', true);
         if (req.cookies.jwt) {
             var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
             if (userRole == 3) {
@@ -293,6 +325,10 @@ class ParcelController {
 
     //[GET] /parcel/to-receiver/in-queue?page=
     showToReceiver(req, res, next) {
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+        res.setHeader('Access-Control-Allow-Credentials', true);
         const pageSize = parseInt(process.env.PAGE_SIZE)
         const page = req.query.page ? (isNaN(parseInt(req.query.page)) ? 0 : (parseInt(req.query.page) < 0 ? 0 : parseInt(req.query.page))) : 0
 
@@ -345,6 +381,10 @@ class ParcelController {
 
     //[PUT] /parcel/to-receiver/in-queue
     forwardToReceiver(req, res, next) {
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+        res.setHeader('Access-Control-Allow-Credentials', true);
         if (req.cookies.jwt) {
             var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
             if (userRole == 4) {
@@ -371,6 +411,10 @@ class ParcelController {
 
     //[GET] /parcel/to-receiver/delivering?page=
     showToReceiverDelivering(req, res, next) {
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+        res.setHeader('Access-Control-Allow-Credentials', true);
         const pageSize = parseInt(process.env.PAGE_SIZE)
         const page = req.query.page ? (isNaN(parseInt(req.query.page)) ? 0 : (parseInt(req.query.page) < 0 ? 0 : parseInt(req.query.page))) : 0
 
@@ -423,6 +467,10 @@ class ParcelController {
 
     //[PUT] /parcel/to-receiver/delivering
     confirmToReceiver(req, res, next) {
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+        res.setHeader('Access-Control-Allow-Credentials', true);
         if (req.cookies.jwt) {
             var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
             if (userRole == 4) {

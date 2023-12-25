@@ -39,10 +39,10 @@ class HomeController {
                         workAt: actor.workAt
                     }, process.env.TOKEN_KEY)
 
-                    res.set({
-                        "Access-Control-Allow-Origin": `http://localhost:${process.env.CLIENT_PORT}`,
-                        "Access-Control-Allow-Credentials": true
-                    })
+                    res.setHeader('Access-Control-Allow-Origin', '*');
+                    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+                    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+                    res.setHeader('Access-Control-Allow-Credentials', true);
                     res.cookie('jwt', cookie, {maxAge: 90000, httpOnly: false})
                     res.status(200).json({
                         role: actor.role
@@ -58,6 +58,10 @@ class HomeController {
 
     //[POST] /logout
     logout(req, res, next) {
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+        res.setHeader('Access-Control-Allow-Credentials', true);
         res.clearCookie('jwt')
         res.status(200).json("Logout successfully")
     }
