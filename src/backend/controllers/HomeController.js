@@ -38,7 +38,7 @@ class HomeController {
                         workAt: actor.workAt
                     }, process.env.TOKEN_KEY)
 
-                    res.cookie('jwt', cookie)
+                    res.cookie('jwt', cookie, {maxAge: 90000, httpOnly: false})
                     res.status(200).json({
                         role: actor.role
                     })
