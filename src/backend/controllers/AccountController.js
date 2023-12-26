@@ -12,8 +12,8 @@ class AccountController {
         const pageSize = parseInt(process.env.PAGE_SIZE)
         const page = req.query.page ? (isNaN(parseInt(req.query.page)) ? 0 : (parseInt(req.query.page) < 0 ? 0 : parseInt(req.query.page))) : 0
 
-        if (req.cookies.jwt) {
-            var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
+        if (req.body.jwt) {
+            var userRole = jwt.verify(req.body.jwt, process.env.TOKEN_KEY).userRole
             
             if (userRole == 0) {
                 const roleFilter = req.query.role ? (isNaN(parseInt(req.query.role)) ? [1, 2] : 
@@ -29,7 +29,7 @@ class AccountController {
                         })
                     })
             } else if (userRole == 1 || userRole == 2){
-                var userBaseID = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).workAt
+                var userBaseID = jwt.verify(req.body.jwt, process.env.TOKEN_KEY).workAt
                 Actors.find({role: [3, 4], workAt: userBaseID})
                     .skip((page * pageSize))
                     .limit(pageSize)
@@ -48,8 +48,8 @@ class AccountController {
 
     //[GET] /account/create
     showCreateAccountPage(req, res, next) {
-        if (req.cookies.jwt) {
-            var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
+        if (req.body.jwt) {
+            var userRole = jwt.verify(req.body.jwt, process.env.TOKEN_KEY).userRole
             if (userRole == 0) {
                 const transactionBases = Bases.find({baseType: 1})
                 const distributionBases = Bases.find({baseType: 0})
@@ -73,10 +73,10 @@ class AccountController {
 
     //[POST] /account/create
     createAccount(req, res, next) {
-        if (req.cookies.jwt) {
-            var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
+        if (req.body.jwt) {
+            var userRole = jwt.verify(req.body.jwt, process.env.TOKEN_KEY).userRole
             if (userRole == 0 || userRole == 1 || userRole == 2) {
-                var accountData = req.body
+                var accountData = req.body.accountData
                 Actors.findOne({username: accountData.username})
                     .then(actor => {
                         if (actor) {
@@ -98,7 +98,7 @@ class AccountController {
                                         res.status(500).json("Data invalid")
                                     })
                             } else {
-                                var userBaseID = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).workAt
+                                var userBaseID = jwt.verify(req.body.jwt, process.env.TOKEN_KEY).workAt
                                 accountData.role = userRole == 1 ? 3 : 4
                                 accountData.workAt = userBaseID
                                 const account = new Actors(accountData)
@@ -128,12 +128,11 @@ class AccountController {
 
     //[GET] /account/edit?id=
     editAccount(req, res, next) {
-        if (req.cookies.jwt) {
-            var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
+        if (req.body.jwt) {
+            var userRole = jwt.verify(req.body.jwt, process.env.TOKEN_KEY).userRole
             if (userRole == 0 || userRole == 1 || userRole == 2) {
                 Actors.findById(req.query.id)
                     .then(actor => {
-                        console.log(req.query.id)
                         res.status(200).json({
                             account: mongooseToObject(actor)
                         })
@@ -148,15 +147,15 @@ class AccountController {
 
     //[PUT] /account/edit?id=
     updateAccount(req, res, next) {
-        if (req.cookies.jwt) {
-            var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
+        if (req.body.jwt) {
+            var userRole = jwt.verify(req.body.jwt, process.env.TOKEN_KEY).userRole
             if (userRole == 0 || userRole == 1 || userRole == 2) {
                 if (userRole == 0) {
-                    Actors.updateOne({_id: req.query.id}, req.body)
+                    Actors.updateOne({_id: req.query.id}, req.body.accountData)
                         .then(() => {
                             Bases.updateOne({managerID: req.query.id}, {$unset: {managerID: ""}})
                                 .then(() => {
-                                    Bases.updateOne({_id: req.body.workAt}, {$set: {managerID: req.query.id}})
+                                    Bases.updateOne({_id: req.body.accountData.workAt}, {$set: {managerID: req.query.id}})
                                         .then(() => {
                                             res.status(200).json('Updated account successfully')
                                         })
@@ -174,7 +173,7 @@ class AccountController {
                 } else {
                     Actors.updateOne(
                         {_id: req.query.id}, 
-                        {$set: {name: req.body.name, username: req.body.username, password: req.body.password}})
+                        {$set: {name: req.body.accountData.name, username: req.body.accountData.username, password: req.body.accountData.password}})
                         .then(() => {
                             res.status(200).json('Updated account successfully')
                         })
@@ -192,13 +191,13 @@ class AccountController {
 
     //[DELETE] /account/delete
     deleteAccount(req, res, next) {
-        if (req.cookies.jwt) {
-            var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
+        if (req.body.jwt) {
+            var userRole = jwt.verify(req.body.jwt, process.env.TOKEN_KEY).userRole
             if (userRole == 0 || userRole == 1 || userRole == 2) {
-                Actors.deleteMany({_id: {$in: req.body.ids}})
+                Actors.deleteMany({_id: {$in: req.body.accountIDs}})
                     .then(() => {
                         if (userRole == 0) {
-                            Bases.updateMany({managerID: {$in: req.body.ids}}, {$unset: {managerID: ""}})
+                            Bases.updateMany({managerID: {$in: req.body.accountIDs}}, {$unset: {managerID: ""}})
                                 .then(() => {
                                     res.status(200).json({message: 'Delete Accounts Successfully'})
                                 })
@@ -206,8 +205,8 @@ class AccountController {
                                     res.status(500).json("Data invalid")
                                 })
                         } else {
-                            var userBaseID = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).workAt
-                            Bases.updateOne({_id: userBaseID}, {$pull: {StaffIDs: {$in: req.body.ids}}})
+                            var userBaseID = jwt.verify(req.body.jwt, process.env.TOKEN_KEY).workAt
+                            Bases.updateOne({_id: userBaseID}, {$pull: {StaffIDs: {$in: req.body.accountIDs}}})
                             .then(() => {
                                 res.status(200).json({message: 'Delete Account Successfully'})
                             })

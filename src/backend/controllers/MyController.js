@@ -7,9 +7,9 @@ const {getTotalStatistic, getBaseGeneralStatistic, getFromSenderStatistic, getTo
 class MyController {
     //[GET] /my/
     show(req, res, next) {
-        if (req.cookies.jwt) {
-            var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
-            var userID = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userID
+        if (req.body.jwt) {
+            var userRole = jwt.verify(req.body.jwt, process.env.TOKEN_KEY).userRole
+            var userID = jwt.verify(req.body.jwt, process.env.TOKEN_KEY).userID
             if (userRole == 0) {
                 Actors.findById(userID)
                     .then(director => {
@@ -20,7 +20,7 @@ class MyController {
                     })
                     
             } else if (userRole >= 1 && userRole <= 4) {
-                let userBaseID = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).workAt
+                let userBaseID = jwt.verify(req.body.jwt, process.env.TOKEN_KEY).workAt
                 const userData = Actors.findById(userID)
                 const workingBase = Bases.findById(userBaseID)
 

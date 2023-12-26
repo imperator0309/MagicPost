@@ -8,9 +8,9 @@ const {getTotalStatistic, getBaseGeneralStatistic, getFromSenderStatistic, getTo
 class StatisticController {
     //[GET] /statistic/general
     showGeneralStatistic(req, res, next) {
-        if (req.cookies.jwt) {
-            var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
-            var userID = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userID
+        if (req.body.jwt) {
+            var userRole = jwt.verify(req.body.jwt, process.env.TOKEN_KEY).userRole
+            var userID = jwt.verify(req.body.jwt, process.env.TOKEN_KEY).userID
             if (userRole == 0) {
                 var statistic
                 getTotalStatistic().then((result) => {
@@ -31,7 +31,7 @@ class StatisticController {
                         })
                 })
             } else if (userRole == 1 || userRole == 2) {
-                let userBaseID = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).workAt
+                let userBaseID = jwt.verify(req.body.jwt, process.env.TOKEN_KEY).workAt
                 var statistic
                 getBaseGeneralStatistic(userBaseID).then((result) => {
                     res.status(200).json({
@@ -48,8 +48,8 @@ class StatisticController {
 
     //[GET] /statistic/base?id=
     showStatisticByBase(req, res, next) {
-        if (req.cookies.jwt) {
-            const userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
+        if (req.body.jwt) {
+            const userRole = jwt.verify(req.body.jwt, process.env.TOKEN_KEY).userRole
             const baseID = req.query.id
             if (req.query.id) {
                 if (userRole == 0) {
@@ -74,9 +74,9 @@ class StatisticController {
 
     //[GET] /statistic/from-sender
     showFromSenderStatistic(req, res, next) {
-        if (req.cookies.jwt) {
-            const userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
-            const userBaseID = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).workAt
+        if (req.body.jwt) {
+            const userRole = jwt.verify(req.body.jwt, process.env.TOKEN_KEY).userRole
+            const userBaseID = jwt.verify(req.body.jwt, process.env.TOKEN_KEY).workAt
             if (userRole == 2) {
                 var statistic
                 getFromSenderStatistic(userBaseID).then((result) => {
@@ -97,9 +97,9 @@ class StatisticController {
 
     //[GET] /statistic/to-receiver
     showToReceiverStatistic(req, res, next) {
-        if (req.cookies.jwt) {
-            const userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
-            const userBaseID = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).workAt
+        if (req.body.jwt) {
+            const userRole = jwt.verify(req.body.jwt, process.env.TOKEN_KEY).userRole
+            const userBaseID = jwt.verify(req.body.jwt, process.env.TOKEN_KEY).workAt
             if (userRole == 2) {
                 var statistic
                 getToReceiverStatistic(userBaseID).then((result) => {

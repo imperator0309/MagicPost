@@ -15,9 +15,9 @@ class HistoryController {
         const end = (req.query.end ? (isNaN(new Date(req.query.end)) ? new Date("3000-12-31") : new Date(req.query.end)) : new Date("3000-12-31")).toJSON()
         const statusFilter = req.query.status ? [parseInt(req.query.status)] : [0, 1, 2, 3, 4]
 
-        if (req.cookies.jwt) {
-            var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
-            var workingBaseID = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).workAt
+        if (req.body.jwt) {
+            var userRole = jwt.verify(req.body.jwt, process.env.TOKEN_KEY).userRole
+            var workingBaseID = jwt.verify(req.body.jwt, process.env.TOKEN_KEY).workAt
             if (userRole == 3 || userRole == 4) {
                 Parcels.aggregate([
                     {
@@ -66,9 +66,9 @@ class HistoryController {
         const end = (req.query.end ? (isNaN(new Date(req.query.end)) ? new Date("3000-12-31") : new Date(req.query.end)) : new Date("3000-12-31")).toJSON()
         const statusFilter = req.query.status ? [parseInt(req.query.status)] : [0, 1, 2, 3, 4]
 
-        if (req.cookies.jwt) {
-            var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
-            var workingBaseID = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).workAt
+        if (req.body.jwt) {
+            var userRole = jwt.verify(req.body.jwt, process.env.TOKEN_KEY).userRole
+            var workingBaseID = jwt.verify(req.body.jwt, process.env.TOKEN_KEY).workAt
             if (userRole == 4) {
                 Parcels.aggregate([
                 {
@@ -117,9 +117,9 @@ class HistoryController {
         const end = (req.query.end ? (isNaN(new Date(req.query.end)) ? new Date("3000-12-31") : new Date(req.query.end)) : new Date("3000-12-31")).toJSON()
         const statusFilter = req.query.status ? [parseInt(req.query.status)] : [0, 1, 2, 3, 4]
 
-        if (req.cookies.jwt) {
-            var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
-            var workingBaseID = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).workAt
+        if (req.body.jwt) {
+            var userRole = jwt.verify(req.body.jwt, process.env.TOKEN_KEY).userRole
+            var workingBaseID = jwt.verify(req.body.jwt, process.env.TOKEN_KEY).workAt
             if (userRole == 4) {
                 Parcels.aggregate([
                 {

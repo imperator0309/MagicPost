@@ -1,6 +1,6 @@
 const Parcels = require('../models/Parcels')
 const Actors = require('../models/Actors')
-const jwt = require('jsonwebtoken')
+const jsonwebtoken = require('jsonwebtoken')
 const {mongooseToObject} = require('../../backend/ulti/mongoose')
 const Bases = require('../models/Bases')
 require('dotenv').config()
@@ -33,19 +33,15 @@ class HomeController {
                 var account = {}
                 if (actor) {
                     actor = mongooseToObject(actor)
-                    var cookie = jwt.sign({
+                    var jwt = jsonwebtoken.sign({
                         userID: actor._id, 
                         userRole: actor.role,
                         workAt: actor.workAt
                     }, process.env.TOKEN_KEY)
-
-                    res.setHeader('Access-Control-Allow-Origin', '*');
-                    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-                    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-                    res.setHeader('Access-Control-Allow-Credentials', true);
-                    res.cookie('jwt', cookie, {maxAge: 90000, httpOnly: false})
+                    
+                    res.cookie('jwt', jwt, {httpOnly: false, secure: false, sameSite: "lax"})
                     res.status(200).json({
-                        role: actor.role
+                        jwt: jwt
                     })
                     
                 } else {
@@ -58,10 +54,6 @@ class HomeController {
 
     //[POST] /logout
     logout(req, res, next) {
-        res.setHeader('Access-Control-Allow-Origin', '*');
-        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-        res.setHeader('Access-Control-Allow-Credentials', true);
         res.clearCookie('jwt')
         res.status(200).json("Logout successfully")
     }

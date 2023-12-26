@@ -15,8 +15,8 @@ class BaseController {
 
         const typeFilter = req.query.baseType ? (isNaN(parseInt(req.query.baseType)) ? [0, 1] : [parseInt(req.query.baseType)]) : [0, 1]
 
-        if (req.cookies.jwt) {
-            var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
+        if (req.body.jwt) {
+            var userRole = jwt.verify(req.body.jwt, process.env.TOKEN_KEY).userRole
             if (userRole == 0) {
                 Bases.find({baseType: {$in: typeFilter}})
                     .sort({_id: -1})
@@ -37,8 +37,8 @@ class BaseController {
 
     //[GET] /base/create
     showCreateBasePage(req, res, next) {
-        if (req.cookies.jwt) {
-            var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
+        if (req.body.jwt) {
+            var userRole = jwt.verify(req.body.jwt, process.env.TOKEN_KEY).userRole
             if (userRole == 0) {
                 Bases.find({baseType: 0})
                     .then(bases => {
@@ -56,10 +56,10 @@ class BaseController {
 
     //[POST] /base/create
     createBase(req, res, next) {
-        if (req.cookies.jwt) {
-            var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
+        if (req.body.jwt) {
+            var userRole = jwt.verify(req.body.jwt, process.env.TOKEN_KEY).userRole
             if (userRole == 0) {
-                var baseData = req.body
+                var baseData = req.body.baseData
                 const base = new Bases(baseData)
                 base.save()
                     .then(res.status(200).json('Create Base Successfully'))
@@ -76,8 +76,8 @@ class BaseController {
 
     //[DELETE] /base/delete
     deleteBase(req, res, next) {
-        if (req.cookies.jwt) {
-            var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
+        if (req.body.jwt) {
+            var userRole = jwt.verify(req.body.jwt, process.env.TOKEN_KEY).userRole
             if (userRole == 0) {
                 Actors.deleteMany({_id: {$in: req.body.baseIDs}})
                     .then(() => {

@@ -9,9 +9,9 @@ class ParcelController {
 
     //[POST] /parcel/create
     createParcel(req, res, next) {
-        if (req.cookies.jwt) {
-            var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
-            var workingBaseID = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).workAt
+        if (req.body.jwt) {
+            var userRole = jwt.verify(req.body.jwt, process.env.TOKEN_KEY).userRole
+            var workingBaseID = jwt.verify(req.body.jwt, process.env.TOKEN_KEY).workAt
             if (userRole == 4) {
                 Bases.findById(workingBaseID)
                     .then(base => {
@@ -20,7 +20,7 @@ class ParcelController {
                             baseLocation: base.baseLocation,
                             timestamp: (new Date()).toJSON()
                         }
-                        var parcelData = req.body
+                        var parcelData = req.body.parcelData
                         parcelData.status = 0
                         parcelData.orderDate = (new Date()).toJSON()
                         parcelData.passedBases = [passedBase]
@@ -46,9 +46,9 @@ class ParcelController {
         const pageSize = parseInt(process.env.PAGE_SIZE)
         const page = req.query.page ? (isNaN(parseInt(req.query.page)) ? 0 : (parseInt(req.query.page) < 0 ? 0 : parseInt(req.query.page))) : 0
 
-        if (req.cookies.jwt) {
-            var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
-            var workingBaseID = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).workAt
+        if (req.body.jwt) {
+            var userRole = jwt.verify(req.body.jwt, process.env.TOKEN_KEY).userRole
+            var workingBaseID = jwt.verify(req.body.jwt, process.env.TOKEN_KEY).workAt
             if (userRole == 3 || userRole == 4) {
                 Parcels.find({status: 1, nextBase: workingBaseID, passedBases: {$not: {$size: 1}}})
                     .sort({_id: -1})
@@ -72,9 +72,9 @@ class ParcelController {
         const pageSize = parseInt(process.env.PAGE_SIZE)
         const page = req.query.page ? (isNaN(parseInt(req.query.page)) ? 0 : (parseInt(req.query.page) < 0 ? 0 : parseInt(req.query.page))) : 0
 
-        if (req.cookies.jwt) {
-            var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
-            var workingBaseID = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).workAt
+        if (req.body.jwt) {
+            var userRole = jwt.verify(req.body.jwt, process.env.TOKEN_KEY).userRole
+            var workingBaseID = jwt.verify(req.body.jwt, process.env.TOKEN_KEY).workAt
             if (userRole == 3) {
                 Parcels.find({status: 1, nextBase: workingBaseID, passedBases: {$size: 1}})
                     .sort({_id: -1})
@@ -95,9 +95,9 @@ class ParcelController {
 
     //[PUT] /parcel/incoming
     confirmIncomingParcels(req, res, next) {
-        if (req.cookies.jwt) {
-            var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
-            var workingBaseID = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).workAt
+        if (req.body.jwt) {
+            var userRole = jwt.verify(req.body.jwt, process.env.TOKEN_KEY).userRole
+            var workingBaseID = jwt.verify(req.body.jwt, process.env.TOKEN_KEY).workAt
             if (userRole == 4 || userRole == 3) {
                 Bases.findById(workingBaseID)
                     .then(base => {
@@ -127,9 +127,9 @@ class ParcelController {
         const pageSize = parseInt(process.env.PAGE_SIZE)
         const page = req.query.page ? (isNaN(parseInt(req.query.page)) ? 0 : (parseInt(req.query.page) < 0 ? 0 : parseInt(req.query.page))) : 0
 
-        if (req.cookies.jwt) {
-            var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
-            var workingBaseID = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).workAt
+        if (req.body.jwt) {
+            var userRole = jwt.verify(req.body.jwt, process.env.TOKEN_KEY).userRole
+            var workingBaseID = jwt.verify(req.body.jwt, process.env.TOKEN_KEY).workAt
             if (userRole == 3 || userRole == 4) {
                 const statusFilter = userRole == 3 ? 1 : 0
                 const incomingParcels = Parcels.find({
@@ -169,9 +169,9 @@ class ParcelController {
 
     //[PUT] /parcel/to-distribution-base
     forwardToDistributionBase(req, res, next) { 
-        if (req.cookies.jwt) {
-            var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
-            var workingBaseID = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).workAt
+        if (req.body.jwt) {
+            var userRole = jwt.verify(req.body.jwt, process.env.TOKEN_KEY).userRole
+            var workingBaseID = jwt.verify(req.body.jwt, process.env.TOKEN_KEY).workAt
             if (userRole == 4) {
                 Bases.findById(workingBaseID)
                     .then(workingBase => {                        
@@ -223,9 +223,9 @@ class ParcelController {
         const pageSize = parseInt(process.env.PAGE_SIZE)
         const page = req.query.page ? (isNaN(parseInt(req.query.page)) ? 0 : (parseInt(req.query.page) < 0 ? 0 : parseInt(req.query.page))) : 0
 
-        if (req.cookies.jwt) {
-            var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
-            var workingBaseID = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).workAt
+        if (req.body.jwt) {
+            var userRole = jwt.verify(req.body.jwt, process.env.TOKEN_KEY).userRole
+            var workingBaseID = jwt.verify(req.body.jwt, process.env.TOKEN_KEY).workAt
             if (userRole == 3) {
                 const incomingParcels = Parcels.find({
                     $and: [
@@ -264,8 +264,8 @@ class ParcelController {
 
     //[PUT] /parcel/to-transaction-base
     forwardToTransactionBase(req, res, next) {
-        if (req.cookies.jwt) {
-            var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
+        if (req.body.jwt) {
+            var userRole = jwt.verify(req.body.jwt, process.env.TOKEN_KEY).userRole
             if (userRole == 3) {
                 Parcels.updateMany({_id: {$in: req.body.parcelIDs}},
                     {
@@ -296,9 +296,9 @@ class ParcelController {
         const pageSize = parseInt(process.env.PAGE_SIZE)
         const page = req.query.page ? (isNaN(parseInt(req.query.page)) ? 0 : (parseInt(req.query.page) < 0 ? 0 : parseInt(req.query.page))) : 0
 
-        if (req.cookies.jwt) {
-            var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
-            var workingBaseID = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).workAt
+        if (req.body.jwt) {
+            var userRole = jwt.verify(req.body.jwt, process.env.TOKEN_KEY).userRole
+            var workingBaseID = jwt.verify(req.body.jwt, process.env.TOKEN_KEY).workAt
             if (userRole == 4) {
                 Parcels.aggregate([
                     {
@@ -345,8 +345,8 @@ class ParcelController {
 
     //[PUT] /parcel/to-receiver/in-queue
     forwardToReceiver(req, res, next) {
-        if (req.cookies.jwt) {
-            var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
+        if (req.body.jwt) {
+            var userRole = jwt.verify(req.body.jwt, process.env.TOKEN_KEY).userRole
             if (userRole == 4) {
                 Parcels.updateMany({_id: {$in: req.body.parcelIDs}},
                     {
@@ -374,9 +374,9 @@ class ParcelController {
         const pageSize = parseInt(process.env.PAGE_SIZE)
         const page = req.query.page ? (isNaN(parseInt(req.query.page)) ? 0 : (parseInt(req.query.page) < 0 ? 0 : parseInt(req.query.page))) : 0
 
-        if (req.cookies.jwt) {
-            var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
-            var workingBaseID = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).workAt
+        if (req.body.jwt) {
+            var userRole = jwt.verify(req.body.jwt, process.env.TOKEN_KEY).userRole
+            var workingBaseID = jwt.verify(req.body.jwt, process.env.TOKEN_KEY).workAt
             if (userRole == 4) {
                 Parcels.aggregate([
                     {
@@ -423,8 +423,8 @@ class ParcelController {
 
     //[PUT] /parcel/to-receiver/delivering
     confirmToReceiver(req, res, next) {
-        if (req.cookies.jwt) {
-            var userRole = jwt.verify(req.cookies.jwt, process.env.TOKEN_KEY).userRole
+        if (req.body.jwt) {
+            var userRole = jwt.verify(req.body.jwt, process.env.TOKEN_KEY).userRole
             if (userRole == 4) {
                 if (req.body.status == 3) {
                     var receivedDate = (new Date()).toJSON()
