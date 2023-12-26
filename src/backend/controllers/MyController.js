@@ -4,12 +4,13 @@ const Bases = require('../models/Bases')
 const jwt = require('jsonwebtoken')
 const {multipleMongooseToObject, mongooseToObject} = require('../../backend/ulti/mongoose')
 const {getTotalStatistic, getBaseGeneralStatistic, getFromSenderStatistic, getToReceiverStatistic} = require('../middleware/statisticMiddleware')
+require('dotenv').config()
 class MyController {
     //[GET] /my/
     show(req, res, next) {
-        if (req.body.jwt) {
-            var userRole = jwt.verify(req.body.jwt, process.env.TOKEN_KEY).userRole
-            var userID = jwt.verify(req.body.jwt, process.env.TOKEN_KEY).userID
+        if (req.get("Authorization")) {
+            var userRole = jwt.verify(req.get("Authorization"), process.env.TOKEN_KEY).userRole
+            var userID = jwt.verify(req.get("Authorization"), process.env.TOKEN_KEY).userID
             if (userRole == 0) {
                 Actors.findById(userID)
                     .then(director => {
@@ -18,9 +19,12 @@ class MyController {
                             role: director.role,
                         })
                     })
+                    .catch(err => {
+                        res.status(500).json("Database Error")
+                    })
                     
             } else if (userRole >= 1 && userRole <= 4) {
-                let userBaseID = jwt.verify(req.body.jwt, process.env.TOKEN_KEY).workAt
+                let userBaseID = jwt.verify(req.get("Authorization"), process.env.TOKEN_KEY).workAt
                 const userData = Actors.findById(userID)
                 const workingBase = Bases.findById(userBaseID)
 
@@ -32,6 +36,9 @@ class MyController {
                             workAt: base._id,
                             baseLocation: base.baseLocation
                         })
+                    })
+                    .catch(err => {
+                        res.status(500).json("Database Error")
                     })
             }
         } else {

@@ -11,13 +11,10 @@ const app = express()
 const port = process.env.PORT
 
 app.use(cors({
-    origin: true,
-    credentials: true,
+    origin: "*",
 }))
 
 app.use(cookieParser())
-
-app.use(express.static(path.join(__dirname, '../frontend/public')))
 
 app.use(express.urlencoded({
     extended: true,
