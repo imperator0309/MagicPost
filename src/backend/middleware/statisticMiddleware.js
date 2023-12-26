@@ -16,7 +16,8 @@ module.exports = {
                 },
                 {
                     $project: {
-                        month: {$substr: [{ $arrayElemAt: ["$passedBases.timestamp", 0]}, 5, 2]}
+                        month: {$substr: [{ $arrayElemAt: ["$passedBases.timestamp", 0]}, 5, 2]},
+                        price: "$price"
                     }
                 },
                 {
@@ -40,7 +41,8 @@ module.exports = {
                 },
                 {
                     $project: {
-                        month: {$substr: [{ $arrayElemAt: ["$passedBases.timestamp", 0]}, 5, 2]}
+                        month: {$substr: [{ $arrayElemAt: ["$passedBases.timestamp", 0]}, 5, 2]},
+                        price: "$price"
                     }
                 },
                 {
@@ -64,14 +66,15 @@ module.exports = {
                 },
                 {
                     $project: {
-                        month: {$substr: [{ $arrayElemAt: ["$passedBases.timestamp", 0]}, 5, 2]}
+                        month: {$substr: [{ $arrayElemAt: ["$passedBases.timestamp", 0]}, 5, 2]},
+                        price: "$price"
                     }
                 },
                 {
                     $group: {
                         _id: "$month",
                         count: { $sum: 1},
-                        totalPrice: {$sum: "$price"}
+                        totalPrice: {$sum: "$price"},
                     }
                 },
                 {
@@ -170,7 +173,8 @@ module.exports = {
                 },
                 {
                     $project: {
-                        month: {$substr: [{ $arrayElemAt: ["$passedBases.timestamp", 0]}, 5, 2]}
+                        month: {$substr: [{ $arrayElemAt: ["$passedBases.timestamp", 0]}, 5, 2]},
+                        price: "$price"
                     }
                 },
                 {
@@ -195,7 +199,8 @@ module.exports = {
                 },
                 {
                     $project: {
-                        month: {$substr: [{ $arrayElemAt: ["$passedBases.timestamp", 0]}, 5, 2]}
+                        month: {$substr: [{ $arrayElemAt: ["$passedBases.timestamp", 0]}, 5, 2]},
+                        price: "$price"
                     }
                 },
                 {
@@ -220,7 +225,8 @@ module.exports = {
                 },
                 {
                     $project: {
-                        month: {$substr: [{ $arrayElemAt: ["$passedBases.timestamp", 0]}, 5, 2]}
+                        month: {$substr: [{ $arrayElemAt: ["$passedBases.timestamp", 0]}, 5, 2]},
+                        price: "$price"
                     }
                 },
                 {
@@ -265,7 +271,8 @@ module.exports = {
                 },
                 {
                     $project: {
-                        month: {$substr: [{ $arrayElemAt: ["$passedBases.timestamp", 0]}, 5, 2]}
+                        month: {$substr: [{ $arrayElemAt: ["$passedBases.timestamp", 0]}, 5, 2]},
+                        price: "$price"
                     }
                 },
                 {
@@ -294,7 +301,8 @@ module.exports = {
                 },
                 {
                     $project: {
-                        month: {$substr: [{ $arrayElemAt: ["$passedBases.timestamp", 0]}, 5, 2]}
+                        month: {$substr: [{ $arrayElemAt: ["$passedBases.timestamp", 0]}, 5, 2]},
+                        price: "$price"
                     }
                 },
                 {
@@ -323,7 +331,8 @@ module.exports = {
                 },
                 {
                     $project: {
-                        month: {$substr: [{ $arrayElemAt: ["$passedBases.timestamp", 0]}, 5, 2]}
+                        month: {$substr: [{ $arrayElemAt: ["$passedBases.timestamp", 0]}, 5, 2]},
+                        price: "$price"
                     }
                 },
                 {

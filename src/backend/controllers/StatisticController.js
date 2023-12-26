@@ -58,7 +58,7 @@ class StatisticController {
                         statistic = result
                         res.status(200).json({
                             total: statistic.totalParcels,
-                            delivered: statistic.receivedParcels
+                            delivered: statistic.deliveredParcels
                         })
                     })
                 } else {
