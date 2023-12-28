@@ -6,17 +6,6 @@
     const route = useRoute()
     var rerender = ref(0)
     var results = ref([])
-    // Switching between service views for <router-view>
-    // Use this instead of <router-link> for css styling and increasing clicking area for users
-    function switch_service(index) {
-        if (index == 0) {
-            return;
-        } else if (index == 1) {
-            router.push({name: 'cost.estimate'});
-        } else if (index == 2) {
-            router.push({name: 'nearby.posts'});
-        }
-    }
 
     function search_parcels() {
         var ids = document.getElementById('parcels').value;
@@ -63,17 +52,6 @@
 
 <template>
     <div class="home_service_box">
-        <ul class="home_service_header">
-            <li class="active" @click="switch_service(0)">
-                parcelTracer
-            </li>
-            <li @click="switch_service(1)">
-                CostEstimator
-            </li>
-            <li @click="switch_service(2)">
-                FindPostOffice
-            </li>
-        </ul>
         <div class="tracking_container">
             <form id = "tracking_form" onsubmit="">
                 <label for="parcels">

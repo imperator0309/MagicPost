@@ -15,7 +15,7 @@
         group_name: 'view history',
         child: [
             {name: 'delivery history', url: {name: 'base.employee.delivery.history'}},
-            {name: 'to receiver', url: {name: 'base.employee.to.receiver'}},
+            {name: 'to receiver', url: {name: 'base.employee.from.sender'}},
             {name: 'from receiver', url: {name: 'base.employee.from.receiver'}}
         ]
     }

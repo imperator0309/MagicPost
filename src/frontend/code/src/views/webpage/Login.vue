@@ -156,7 +156,7 @@
         width: 24px;
         height: 24px;
         position: absolute;
-        left: 3%;
+        left: 2.5%;
         top: 30%;
     }
 

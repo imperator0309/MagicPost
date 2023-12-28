@@ -1,8 +1,6 @@
 import { createRouter, createWebHistory, createWebHashHistory } from 'vue-router'
 import Home from '@/views/webpage/Home.vue'
 import ParcelInfo from '@/views/webpage/ParcelInfo.vue'
-import CostEstimate from '@/views/webpage/CostEstimate.vue'
-import NearbyPosts from '@/views/webpage/NearbyPosts.vue'
 import Login from '@/views/webpage/Login.vue'
 import BaseWork from '@/views/base-employee/Work.vue'
 import DepoWork from '@/views/depo-employee/Work.vue'
@@ -26,22 +24,7 @@ const routes = [
                 name: 'parcel.info',
                 component: ParcelInfo,
             },
-            {
-                path: 'service/cost-estimate',
-                name: 'cost.estimate',
-                component: CostEstimate,
-            },
-            {
-                path: 'service/nearby-posts',
-                name: 'nearby.posts',
-                component: NearbyPosts,
-            }
         ],
-    },
-    {
-        path: '/about', 
-        name: 'about', 
-        component: ()=>import('@/views/webpage/About.vue'),
     },
     {
         path: '/login', 
@@ -89,9 +72,9 @@ const routes = [
                 component: ()=>import('@/views/base-employee/DeliveryHistory.vue')
             },
             {
-                path: 'to-receiver',
-                name: 'base.employee.to.receiver',
-                component: ()=>import('@/views/base-employee/ToReceiver.vue')
+                path: 'from-sender',
+                name: 'base.employee.from.sender',
+                component: ()=>import('@/views/base-employee/FromSender.vue')
             },
             {
                 path: 'from-receiver',

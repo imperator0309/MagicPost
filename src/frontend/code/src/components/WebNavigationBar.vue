@@ -11,10 +11,10 @@
                 </router-link>
             </li>
             <li class="url">
-                <router-link to="/about">About</router-link>
+                
             </li>
             <li class="url">
-                <a>Services</a>
+                
             </li>
             <li class="url">
                 <router-link :to= "{name:'login'}">Login</router-link>

@@ -19,7 +19,8 @@
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
-                'Authorization': sessionStorage.getItem("jwt")
+                'Authorization': sessionStorage.getItem("jwt"),
+                'Cache-control': 'no-cache'
             },
         })
         .then((response) => response.json())
@@ -47,7 +48,8 @@
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
-                'Authorization': sessionStorage.getItem("jwt")
+                'Authorization': sessionStorage.getItem("jwt"),
+                'Cache-control': 'no-cache'
             },
         })
         .then((response) => response.json())
@@ -68,7 +70,8 @@
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
-                'Authorization': sessionStorage.getItem("jwt")
+                'Authorization': sessionStorage.getItem("jwt"),
+                'Cache-control': 'no-cache'
             },
         })
         .then((response) => response.json())
