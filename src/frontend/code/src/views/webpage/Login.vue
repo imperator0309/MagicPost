@@ -34,7 +34,13 @@
                 }
             )
         })
-        .then(response => response.json())
+        .then(function(response) {
+            if (!response.ok) {
+                alert("Invalid credentials")
+                throw new Error("Invalid credentials");
+            }
+            return response.json()
+        })
         .then(response => {
             sessionStorage.clear()
             sessionStorage.setItem("jwt", response['jwt'])
@@ -58,7 +64,8 @@
                 } else if (response['role'] == 4) {
                     router.push({name: 'base.employee.default'})
                 } else {
-                    alert('Invalid Credentials!')
+                    alert("Invalid credentials")
+                    throw new Error("Invalid credentials");
                 }
             })
         })

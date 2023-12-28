@@ -32,22 +32,25 @@
             )
         })
         .then(response => response.text())
-        .then(response => alert(response))
-
-        curr_page = 0
-        fetch('http://localhost:8080/parcel/incoming/from-distribution-base?page=' + 0,{
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Authorization': sessionStorage.getItem("jwt")
-            },
+        .then(response => {
+            alert(response)
+            curr_page = 0
+            fetch('http://localhost:8080/parcel/incoming/from-distribution-base?page=' + 0,{
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': sessionStorage.getItem("jwt")
+                },
+            })
+            .then((response) => response.json())
+            .then((json) => {
+                data = json;
+                render.value = render.value + 1
+            });
         })
-        .then((response) => response.json())
-        .then((json) => {
-            data = json;
-            render.value = render.value + 1
-        });
+
+        
     }
 
     function nextPage() {

@@ -9,7 +9,6 @@
             {name: 'pending from depo', url: {name: 'base.employee.pending.from.depo'}},
             {name: 'pending deliveries', url: {name: 'base.employee.pending.delivery'}},
             {name: 'delivery confirmation', url: {name: 'base.employee.delivery.confirmation'}},
-            {name: 'delivery history', url: {name: 'base.employee.delivery.history'}},
         ]
     }
     const history_links = {
