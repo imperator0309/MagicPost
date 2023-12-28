@@ -12,29 +12,39 @@ class ParcelController {
         if (req.get("Authorization")) {
             var userRole = jwt.verify(req.get("Authorization"), process.env.TOKEN_KEY).userRole
             var workingBaseID = jwt.verify(req.get("Authorization"), process.env.TOKEN_KEY).workAt
-            if (userRole == 4) {
-                Bases.findById(workingBaseID)
-                    .then(base => {
-                        var passedBase = {
-                            id: workingBaseID,
-                            baseLocation: base.baseLocation,
-                            timestamp: (new Date()).toJSON()
-                        }
-                        var parcelData = req.body.parcelData
-                        parcelData.status = 0
-                        parcelData.orderDate = (new Date()).toJSON()
-                        parcelData.passedBases = [passedBase]
-                        const newParcel = new Parcels(parcelData)
-                        newParcel.save()
-                            .then(() => {
-                                res.status(200).json("Create new parcel successfully")
+            if (req.body.parcelData) {
+                if (userRole == 4) {
+                    try {
+                        Bases.findById(workingBaseID)
+                        .then(base => {
+                            var passedBase = {
+                                id: workingBaseID,
+                                baseLocation: base.baseLocation,
+                                timestamp: (new Date()).toJSON()
+                            }
+                            var parcelData = req.body.parcelData
+                            parcelData.status = 0
+                            parcelData.orderDate = (new Date()).toJSON()
+                            parcelData.passedBases = [passedBase]
+                            const newParcel = new Parcels(parcelData)
+                            newParcel.save()
+                                .then(() => {
+                                    res.status(200).json("Create new parcel successfully")
+                                })
+                                .catch(err => {
+                                    console.log(err)
+                                    res.status(500).json("Data invalid")
+                                })
                             })
-                            .catch(err => {
-                                res.status(500).json("Data invalid")
-                            })
-                        })
+                    } catch (err) {
+                        console.log(err)
+                        res.status(400).json("Bad Request")
+                    }
+                } else {
+                    res.status(403).json("Permission denied")
+                }
             } else {
-                res.status(403).json("Permission denied")
+                res.status(400).json("Parcel Data Empty")
             }
         } else {
             res.status(401).json("Permission denied")
@@ -99,21 +109,26 @@ class ParcelController {
             var userRole = jwt.verify(req.get("Authorization"), process.env.TOKEN_KEY).userRole
             var workingBaseID = jwt.verify(req.get("Authorization"), process.env.TOKEN_KEY).workAt
             if (userRole == 4 || userRole == 3) {
-                Bases.findById(workingBaseID)
-                    .then(base => {
-                        var passedBase = {
-                            id: workingBaseID,
-                            baseLocation: base.baseLocation,
-                            timestamp: (new Date()).toJSON()
-                        }
-                        Parcels.updateMany({_id: {$in: req.body.parcelIDs}}, {$push: {passedBases: passedBase}, $unset: {nextBase: ""}})
-                            .then(() => {
-                                res.status(200).json("Confirmed incoming parcels successfully")
-                            })
-                            .catch(err => {
-                                res.status(500).json("Data invalid")
-                            })
-                    })
+                if (req.body.parcelIDs) {
+                    Bases.findById(workingBaseID)
+                        .then(base => {
+                            var passedBase = {
+                                id: workingBaseID,
+                                baseLocation: base.baseLocation,
+                                timestamp: (new Date()).toJSON()
+                            }
+                            Parcels.updateMany({_id: {$in: req.body.parcelIDs}}, {$push: {passedBases: passedBase}, $unset: {nextBase: ""}})
+                                .then(() => {
+                                    res.status(200).json("Confirmed incoming parcels successfully")
+                                })
+                                .catch(err => {
+                                    console.log(err)
+                                    res.status(500).json("Data invalid")
+                                })
+                        })
+                } else {
+                    res.status(400).json("Must specify parcel id")
+                }
             } else {
                 res.status(403).json("Permission denied")
             }
@@ -172,46 +187,51 @@ class ParcelController {
         if (req.get("Authorization")) {
             var userRole = jwt.verify(req.get("Authorization"), process.env.TOKEN_KEY).userRole
             var workingBaseID = jwt.verify(req.get("Authorization"), process.env.TOKEN_KEY).workAt
-            if (userRole == 4) {
-                Bases.findById(workingBaseID)
-                    .then(workingBase => {                        
-                        Parcels.updateMany({_id: {$in: req.body.parcelIDs}},
-                            {
-                                $set: {
-                                    nextBase: workingBase.superiorBase,
-                                    "passedBases.$[element].leave": (new Date()).toJSON(),
-                                    status: 1
+            if (req.body.parcelIDs) {    
+                if (userRole == 4) {
+                    Bases.findById(workingBaseID)
+                        .then(workingBase => {                        
+                            Parcels.updateMany({_id: {$in: req.body.parcelIDs}},
+                                {
+                                    $set: {
+                                        nextBase: workingBase.superiorBase,
+                                        "passedBases.$[element].leave": (new Date()).toJSON(),
+                                        status: 1
+                                    },
                                 },
-                            },
-                            {
-                                arrayFilters: [{"element": {$exists: true}}]
-                            })
-                            .then(() => {
-                                res.status(200).json("Create forwarding successfully")
-                            })
-                            .catch(err => {
-                                res.status(500).json("Data invalid")
-                            })
-                    })
-            } else if (userRole == 3) {
-                Parcels.updateMany({_id: {$in: req.body.parcelIDs}},
-                    {
-                        $set: {
-                            nextBase: req.body.nextBase,
-                            "passedBases.$[element].leave": (new Date()).toJSON()
-                        }
-                    }, 
-                    {
-                        arrayFilters: [{"element": {$exists: true}}]
-                    })
+                                {
+                                    arrayFilters: [{"element": {$exists: true}}]
+                                })
+                                .then(() => {
+                                    res.status(200).json("Create forwarding successfully")
+                                })
+                                .catch(err => {
+                                    console.log(err)
+                                    res.status(500).json("Data invalid")
+                                })
+                        })
+                } else if (userRole == 3) {
+                    Parcels.updateMany({_id: {$in: req.body.parcelIDs}},
+                        {
+                            $set: {
+                                nextBase: req.body.nextBase,
+                                "passedBases.$[element].leave": (new Date()).toJSON()
+                            }
+                        }, 
+                        {
+                            arrayFilters: [{"element": {$exists: true}}]
+                        })
                     .then(() => {
                         res.status(200).json("Sent to distribution base successfully")
                     })
                     .catch(err => {
                         res.status(500).json("Data invalid")
                     })
-            }  else {
-                res.status(403).json("Permission denied")
+                }  else {
+                    res.status(403).json("Permission denied")
+                }
+            } else {
+                res.status(400).json("Must specify parcel id")
             }
         } else {
             res.status(401).json("Permission denied")
@@ -267,22 +287,27 @@ class ParcelController {
         if (req.get("Authorization")) {
             var userRole = jwt.verify(req.get("Authorization"), process.env.TOKEN_KEY).userRole
             if (userRole == 3) {
-                Parcels.updateMany({_id: {$in: req.body.parcelIDs}},
-                    {
-                        $set: {
-                            nextBase: req.body.nextBase,
-                            "passedBases.$[element].leave": (new Date()).toJSON()
-                        }
-                    }, 
-                    {
-                        arrayFilters: [{"element": {$exists: true}}]
-                    })
-                    .then(() => {
-                        res.status(200).json("Sent to transaction base successfully")
-                    })
-                    .catch(err => {
-                        res.status(500).json("Data invalid")
-                    })
+                if (req.body.parcelIDs) {
+                    Parcels.updateMany({_id: {$in: req.body.parcelIDs}},
+                        {
+                            $set: {
+                                nextBase: req.body.nextBase,
+                                "passedBases.$[element].leave": (new Date()).toJSON()
+                            }
+                        }, 
+                        {
+                            arrayFilters: [{"element": {$exists: true}}]
+                        })
+                        .then(() => {
+                            res.status(200).json("Sent to transaction base successfully")
+                        })
+                        .catch(err => {
+                            console.log(err)
+                            res.status(500).json("Data invalid")
+                        })
+                } else {
+                    res.status(400).json("Must specify parcel id")
+                }
             } else {
                 res.status(403).json("Permission denied")
             }
@@ -348,19 +373,24 @@ class ParcelController {
         if (req.get("Authorization")) {
             var userRole = jwt.verify(req.get("Authorization"), process.env.TOKEN_KEY).userRole
             if (userRole == 4) {
-                Parcels.updateMany({_id: {$in: req.body.parcelIDs}},
-                    {
-                        $set: {status: 2, "passedBases.$[element].leave": (new Date()).toJSON()}
-                    }, 
-                    {
-                        arrayFilters: [{"element": {$exists: true}}]
+                if (req.body.parcelIDs) {
+                    Parcels.updateMany({_id: {$in: req.body.parcelIDs}},
+                        {
+                            $set: {status: 2, "passedBases.$[element].leave": (new Date()).toJSON()}
+                        }, 
+                        {
+                            arrayFilters: [{"element": {$exists: true}}]
+                        })
+                    .then(() => {
+                        res.status(200).json("Create Parcels sent to receiver successfully")
                     })
-                        .then(() => {
-                            res.status(200).json("Create Parcels sent to receiver successfully")
-                        })
-                        .catch(err => {
-                            res.status(500).json("Data invalid")
-                        })
+                    .catch(err => {
+                        console.log(err)
+                        res.status(500).json("Data invalid")
+                    })
+                } else {
+                    res.status(400).json("must specify parcel id")
+                }
             } else {
                 res.status(403).json("Permission denied")
             }
@@ -426,27 +456,33 @@ class ParcelController {
         if (req.get("Authorization")) {
             var userRole = jwt.verify(req.get("Authorization"), process.env.TOKEN_KEY).userRole
             if (userRole == 4) {
-                if (req.body.status == 3) {
-                    var receivedDate = (new Date()).toJSON()
-                    Parcels.updateMany({_id: {$in: req.body.parcelIDs}}, {$set: {status: req.body.status, finishedDate: receivedDate}})
-                        .then(() => {
-                            res.status(200).json("Confirmed parcels successfully")
-                        })
-                        .catch(err => {
-                            res.status(500).json("Data invalid")
-                        })
-
-                } else if (req.body.status == 4) {
-                    var canceledDate = (new Date()).toJSON()
-                    Parcels.updateMany({_id: {$in: req.body.parcelIDs}}, {$set: {status: req.body.status, finishedDate: canceledDate}})
-                        .then(() => {
-                            res.status(200).json("Confirmed parcels successfully")
-                        })
-                        .catch(err => {
-                            res.status(500).json("Data invalid")
-                        })
+                if (req.body.parcelIDs && req.body.status) {
+                    if (req.body.status == 3) {
+                        var receivedDate = (new Date()).toJSON()
+                        Parcels.updateMany({_id: {$in: req.body.parcelIDs}}, {$set: {status: req.body.status, finishedDate: receivedDate}})
+                            .then(() => {
+                                res.status(200).json("Confirmed parcels successfully")
+                            })
+                            .catch(err => {
+                                console.log(err)
+                                res.status(500).json("Data invalid")
+                            })
+    
+                    } else if (req.body.status == 4) {
+                        var canceledDate = (new Date()).toJSON()
+                        Parcels.updateMany({_id: {$in: req.body.parcelIDs}}, {$set: {status: req.body.status, finishedDate: canceledDate}})
+                            .then(() => {
+                                res.status(200).json("Confirmed parcels successfully")
+                            })
+                            .catch(err => {
+                                console.log(err)
+                                res.status(500).json("Data invalid")
+                            })
+                    } else {
+                        res.status(400).json("Invalid Status")
+                    }
                 } else {
-                    res.status(400).json("Invalid Status")
+                    res.status(400).json("Must specify parcel id and status")
                 }
             } else {
                 res.status(403).json("Permission denied")

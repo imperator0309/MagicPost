@@ -20,6 +20,7 @@ class MyController {
                         })
                     })
                     .catch(err => {
+                        console.log(err)
                         res.status(500).json("Database Error")
                     })
                     
@@ -38,6 +39,7 @@ class MyController {
                         })
                     })
                     .catch(err => {
+                        console.log(err)
                         res.status(500).json("Database Error")
                     })
             }

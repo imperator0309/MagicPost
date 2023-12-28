@@ -48,6 +48,10 @@ class HistoryController {
                         history: parcels
                     })
                 })
+                .catch(err => {
+                    console.log(err)
+                    res.status(500).json("Server Database Err")
+                })
             } else {
                 res.status(403).json("Permission denied")
             }
@@ -98,7 +102,10 @@ class HistoryController {
                         history: history
                     })
                 })
-
+                .catch(err => {
+                    console.log(err)
+                    res.status(500).json("Server Database Err")
+                })
             } else {
                 res.status(403).json("Permission denied")
             }
@@ -149,7 +156,10 @@ class HistoryController {
                         history: history
                     })
                 })
-
+                .catch(err => {
+                    console.log(err)
+                    res.status(500).json("Server Database Err")
+                })
             } else {
                 res.status(403).json("Permission denied")
             }

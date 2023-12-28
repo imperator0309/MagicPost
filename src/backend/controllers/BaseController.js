@@ -59,13 +59,18 @@ class BaseController {
         if (req.get("Authorization")) {
             var userRole = jwt.verify(req.get("Authorization"), process.env.TOKEN_KEY).userRole
             if (userRole == 0) {
-                var baseData = req.body.baseData
-                const base = new Bases(baseData)
-                base.save()
-                    .then(res.status(200).json('Create Base Successfully'))
-                    .catch(err => {
-                        res.status(500).json("Data invalid")
-                    })
+                if (req.body.baseData) {
+                    var baseData = req.body.baseData
+                    const base = new Bases(baseData)
+                    base.save()
+                        .then(res.status(200).json('Create Base Successfully'))
+                        .catch(err => {
+                            console.log(err)
+                            res.status(400).json("Data invalid")
+                        })
+                } else {
+                    res.status(400).json("Base data empty")
+                }
             } else {
                 res.status(403).json('Permission Denied')
             }
@@ -79,19 +84,25 @@ class BaseController {
         if (req.get("Authorization")) {
             var userRole = jwt.verify(req.get("Authorization"), process.env.TOKEN_KEY).userRole
             if (userRole == 0) {
-                Actors.deleteMany({_id: {$in: req.body.baseIDs}})
-                    .then(() => {
-                        Actors.updateMany({workAt: {$in: req.body.baseIDs}}, {$unset: {workAt: ""}})
-                            .then(() => {
-                                res.status(200).json({message: 'Delete Bases Successfully'})
-                            })
-                            .catch(err => {
-                                res.status(500).json("Data invalid")
-                            })
-                    })
-                    .catch(err => {
-                        res.status(500).json("Data invalid")
-                    })
+                if (req.body.baseIDs) {
+                    Actors.deleteMany({_id: {$in: req.body.baseIDs}})
+                        .then(() => {
+                            Actors.updateMany({workAt: {$in: req.body.baseIDs}}, {$unset: {workAt: ""}})
+                                .then(() => {
+                                    res.status(200).json({message: 'Delete Bases Successfully'})
+                                })
+                                .catch(err => {
+                                    console.log(err)
+                                    res.status(500).json("Data invalid")
+                                })
+                        })
+                        .catch(err => {
+                            console.log(err)
+                            res.status(500).json("Data invalid")
+                        })
+                } else {
+                    res.status(400).json("Must specify base id")
+                }
             } else {
                 res.status(403).json({message: 'Permission Denied'})
             }
