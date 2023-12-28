@@ -46,6 +46,32 @@ import { toRef, ref, onUpdated } from 'vue';
             button.textContent = 'DETAILS'
         }
     }
+
+    function get_status(code) {
+        if (code == 0) {
+            return 'being processed'
+        }
+        if (code == 1) {
+            return 'delivering'
+        }
+        if (code == 2) {
+            return 'shipping to receiver'
+        }
+        if (code == 3) {
+            return 'delivered'
+        }
+        if (code == 4) {
+            return 'returned'
+        }
+        return 'error'
+    }
+
+    function date_handle(date) {
+        var date_obj = new Date(new Date(date))
+        var final = '' + date_obj.getDate() + '/' + (date_obj.getMonth() + 1) + '/' + (date_obj.getFullYear())
+        final += ' ' + date_obj.getHours() + ':' + date_obj.getMinutes() + ':' +date_obj.getSeconds()
+        return final
+    }
     
     defineExpose({
         getParcels,
@@ -86,10 +112,10 @@ import { toRef, ref, onUpdated } from 'vue';
                         {{ parcel['sentTo'] }} <br>
                     </td>
                     <td class="large">
-                        {{ parcel['orderDate'] }}
+                        {{ date_handle(parcel['orderDate']) }}
                     </td>
                     <td class="small">
-                        {{ parcel['status'] }}
+                        {{ get_status(parcel['status']) }}
                     </td>
                     <td class="small">
                         <button :id="parcel['_id'] + 'details'" @click="toggleDetails(parcel['_id'])">DETAILS</button>
@@ -99,7 +125,7 @@ import { toRef, ref, onUpdated } from 'vue';
                     <td style="width: 100%;">
                         <ul>
                             <li v-for="passed in parcel['passedBases']">
-                                {{ passed['id'] }} - {{ passed['baseLocation'] }} - {{ passed['timestamp'] }}
+                                {{ passed['id'] }} - {{ passed['baseLocation'] }} -  {{ date_handle(passed['timestamp']) }}
                             </li>
                         </ul>
                     </td>

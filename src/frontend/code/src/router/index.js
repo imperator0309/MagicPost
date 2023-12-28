@@ -122,6 +122,11 @@ const routes = [
                 path: 'pending-to-depo',
                 name: 'depo.employee.pending.to.depo',
                 component: ()=>import('@/views/depo-employee/PendingToDepo.vue'),
+            },
+            {
+                path: 'delivery-history',
+                name: 'depo.employee.delivery.history',
+                component: ()=>import('@/views/depo-employee/DeliveryHistory.vue')
             }
         ]
     },

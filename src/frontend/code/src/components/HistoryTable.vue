@@ -2,6 +2,32 @@
     const props = defineProps({
         data: Array,
     })
+
+    function get_status(code) {
+        if (code == 0) {
+            return 'being processed'
+        }
+        if (code == 1) {
+            return 'delivering'
+        }
+        if (code == 2) {
+            return 'shipping to receiver'
+        }
+        if (code == 3) {
+            return 'delivered'
+        }
+        if (code == 4) {
+            return 'returned'
+        }
+        return 'error'
+    }
+
+    function date_handle(date) {
+        var date_obj = new Date(new Date(date))
+        var final = '' + date_obj.getDate() + '/' + (date_obj.getMonth() + 1) + '/' + (date_obj.getFullYear())
+        final += ' ' + date_obj.getHours() + ':' + date_obj.getMinutes() + ':' +date_obj.getSeconds()
+        return final
+    }
 </script>
 
 <template>
@@ -10,7 +36,7 @@
             <th class="medium">PARCEL ID</th>
             <th class="medium">SENDER</th>
             <th class="medium">RECEIVER</th>
-            <th class="large">ORDER DATE</th>
+            <th class="medium">ORDER DATE</th>
             <th class="small">STATUS</th>
             <th class="medium">LAST LOCATION</th>
         </thead>
@@ -28,15 +54,15 @@
                         {{ parcel['receiverPhone'] }} <br>
                         {{ parcel['sentTo'] }} <br>
                     </td>
-                    <td class="large">
-                        {{ parcel['orderDate'] }}
+                    <td class="medium">
+                        {{ date_handle(parcel['orderDate']) }}
                     </td>
                     <td class="small">
-                        {{ parcel['status'] }}
+                        {{ get_status(parcel['status']) }}
                     </td>
                     <td class="medium">
                         {{ parcel['passedBases']['baseLocation'] }}<br>
-                        {{ parcel['passedBases']['timestamp'] }}
+                        {{ date_handle(parcel['passedBases']['timestamp']) }}
                     </td>
                 </tr>
             </div>

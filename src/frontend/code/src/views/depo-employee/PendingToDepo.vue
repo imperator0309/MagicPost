@@ -34,8 +34,24 @@
                 }
             )
         })
-        .then(response => response.json())
-        .then(response => console.log(JSON.stringify(response['body'])))
+        .then(response => response.text())
+        .then(response => alert(response))
+
+        curr_page = 0
+        fetch('http://localhost:8080/parcel/to-distribution-base?page=0',{
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': document.cookie
+            },
+        })
+        .then((response) => response.json())
+        .then((json) => {
+            data = json;
+            bases = json;
+            render.value = render.value + 1
+        });
     }
 
     function nextPage() {
