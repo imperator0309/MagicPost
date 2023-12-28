@@ -1,0 +1,23 @@
+{
+    "parcels": [],
+    "bases": [
+        {
+            "_id": "65771cc24d8eedcd98ac0053",
+            "baseType": 0,
+            "baseLocation": "Thành Phố Hồ Chí Minh",
+            "StaffIDs": [
+                "6577a72e44ae8929030a572f"
+            ],
+            "__v": 0,
+            "managerID": "65771f32d0c0848ce3e9472f"
+        },
+        {
+            "_id": "65771cc84d8eedcd98ac0055",
+            "baseType": 0,
+            "baseLocation": "Đà Nẵng",
+            "StaffIDs": [],
+            "__v": 0,
+            "managerID": "65771f3fd0c0848ce3e94733"
+        }
+    ]
+}

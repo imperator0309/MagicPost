@@ -1,0 +1,22 @@
+{
+    "_id": "6542ee0093f174c7ee3c9112",
+    "passedBases": [
+        {
+            "id": "656383a635850a6e820272d1",
+            "timestamp" : "20-11-2023"
+        },
+        {
+            "id": "6563846564fa91557ff06aad",
+            "timestamp": "27-11-2023"
+        }
+    ],
+    "receiverName": "imperator",
+    "receiverPhone": "4567809123",
+    "sendFrom": "Mê Linh, Hà Nội",
+    "sendTo": "Tổ 2, Chi Đông",
+    "senderName": "kaiser",
+    "senderPhone": "1234567890",
+    "status": 0,
+    "weight": 1,
+    "queySuccess": "true"
+}

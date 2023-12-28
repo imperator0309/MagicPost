@@ -1,0 +1,34 @@
+{
+    "parcels": [],
+    "bases": [
+        {
+            "_id": "65771d184d8eedcd98ac0058",
+            "baseType": 1,
+            "baseLocation": "Đông Anh",
+            "StaffIDs": [
+                "6577a7fc44ae8929030a573d"
+            ],
+            "superiorBase": "65771cbb4d8eedcd98ac0051",
+            "__v": 0,
+            "managerID": "65771f76d0c0848ce3e94737"
+        },
+        {
+            "_id": "65771d234d8eedcd98ac005a",
+            "baseType": 1,
+            "baseLocation": "Mê Linh",
+            "StaffIDs": [],
+            "superiorBase": "65771cbb4d8eedcd98ac0051",
+            "__v": 0,
+            "managerID": "65771f83d0c0848ce3e9473b"
+        },
+        {
+            "_id": "65771d2b4d8eedcd98ac005c",
+            "baseType": 1,
+            "baseLocation": "Sóc Sơn",
+            "StaffIDs": [],
+            "superiorBase": "65771cbb4d8eedcd98ac0051",
+            "__v": 0,
+            "managerID": "65771f93d0c0848ce3e94740"
+        }
+    ]
+}
