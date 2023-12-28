@@ -16,7 +16,8 @@
         group_name: 'view history',
         child: [
             {name: 'delivery history', url: {name: 'base.employee.delivery.history'}},
-            {name: 'submitted parcel', url: {name: 'base.employee.submitted.parcel'}}
+            {name: 'to receiver', url: {name: 'base.employee.to.receiver'}},
+            {name: 'from receiver', url: {name: 'base.employee.from.receiver'}}
         ]
     }
 
@@ -26,17 +27,17 @@
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
-                'Authorization': document.cookie
+                'Authorization': sessionStorage.getItem("jwt")
             },
         })
         .then(response => {
-            document.cookie = ''
+            sessionStorage.clear()
             router.push({name: 'login'})
         })
     }
 
     function home() {
-        router.push({name: 'depo.employee'})
+        router.push({name: 'base.employee.default'})
     }
 </script>
 

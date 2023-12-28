@@ -23,11 +23,11 @@
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
-                'Authorization': document.cookie
+                'Authorization': sessionStorage.getItem("jwt")
             },
         })
         .then(response => {
-            document.cookie = ''
+            sessionStorage.clear()
             router.push({name: 'login'})
         })
     }

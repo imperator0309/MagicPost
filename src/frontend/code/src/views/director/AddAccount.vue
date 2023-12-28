@@ -109,7 +109,7 @@ function searchWorkplace() {
     xmlhttp.open("GET", api_call_url2, true);
     xmlhttp.setRequestHeader("Accept", "application/json");
     xmlhttp.setRequestHeader("Content-Type", "application/json");
-    xmlhttp.setRequestHeader("Authorization", document.cookie);
+    xmlhttp.setRequestHeader("Authorization", sessionStorage.getItem("jwt"));
     xmlhttp.send(null);
 }
 
@@ -118,7 +118,7 @@ function postAccount() {
   xhr.open("POST", "http://localhost:8080/account/create");
   xhr.setRequestHeader("Accept", "application/json");
   xhr.setRequestHeader("Content-Type", "application/json");
-  xhr.setRequestHeader("Authorization", document.cookie)
+  xhr.setRequestHeader("Authorization", sessionStorage.getItem("jwt"))
   xhr.onreadystatechange = function () {
     if (xhr.readyState === 4) {
       console.log(xhr.status);

@@ -56,6 +56,7 @@ const routes = [
             {
                 path: '',
                 name: 'base.employee.default',
+                component: ()=>import('@/views/base-employee/DeliveryHistory.vue')
             },
             {
                 path: 'create-parcel',
@@ -88,9 +89,14 @@ const routes = [
                 component: ()=>import('@/views/base-employee/DeliveryHistory.vue')
             },
             {
-                path: 'submitted-parcel',
-                name: 'base.employee.submitted.parcel',
-                component: ()=>import('@/views/base-employee/SubmittedParcel.vue')
+                path: 'to-receiver',
+                name: 'base.employee.to.receiver',
+                component: ()=>import('@/views/base-employee/ToReceiver.vue')
+            },
+            {
+                path: 'from-receiver',
+                name: 'base.employee.from.receiver',
+                component: ()=>import('@/views/base-employee/FromReceiver.vue')
             }
         ]
     },
@@ -102,6 +108,7 @@ const routes = [
             {
                 path: '',
                 name: 'depo.employee.default',
+                component: ()=>import('@/views/depo-employee/DeliveryHistory.vue')
             },
             {
                 path: 'pending-from-base',

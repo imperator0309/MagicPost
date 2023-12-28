@@ -19,7 +19,7 @@
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
-                'Authorization': document.cookie
+                'Authorization': sessionStorage.getItem("jwt")
             },
         })
         .then((response) => response.json())
@@ -49,7 +49,7 @@
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
-                'Authorization': document.cookie
+                'Authorization': sessionStorage.getItem("jwt")
             },
         })
         .then((response) => response.json())
@@ -78,7 +78,7 @@
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
-                'Authorization': document.cookie
+                'Authorization': sessionStorage.getItem("jwt")
             },
             body: JSON.stringify(
                 {
@@ -96,7 +96,7 @@
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
-                'Authorization': document.cookie
+                'Authorization': sessionStorage.getItem("jwt")
             },
         })
         .then((response) => response.json())
@@ -119,7 +119,7 @@
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
-                'Authorization': document.cookie
+                'Authorization': sessionStorage.getItem("jwt")
             },
             body: JSON.stringify(
                 {
@@ -137,7 +137,7 @@
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
-                'Authorization': document.cookie
+                'Authorization': sessionStorage.getItem("jwt")
             },
         })
         .then((response) => response.json())
@@ -153,7 +153,7 @@
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
-                'Authorization': document.cookie
+                'Authorization': sessionStorage.getItem("jwt")
             },
         })
         .then((response) => response.json())

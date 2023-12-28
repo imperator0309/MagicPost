@@ -36,12 +36,13 @@
         })
         .then(response => response.json())
         .then(response => {
-            document.cookie = response['jwt']
+            sessionStorage.clear()
+            sessionStorage.setItem("jwt", response['jwt'])
             fetch('http://localhost:8080/my/', {
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
-                    'Authorization': document.cookie
+                    'Authorization': sessionStorage.getItem("jwt")
                 },
             })
             .then(details => details.json())
@@ -53,9 +54,9 @@
                 } else if (response['role'] == 2) {
                     router.push({name: 'depo.manager'})
                 } else if (response['role'] == 3) {
-                    router.push({name: 'depo.employee'})
+                    router.push({name: 'depo.employee.default'})
                 } else if (response['role'] == 4) {
-                    router.push({name: 'base.employee'})
+                    router.push({name: 'base.employee.default'})
                 } else {
                     alert('Invalid Credentials!')
                 }

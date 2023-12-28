@@ -1,5 +1,5 @@
 <script setup>
-    var cookies = document.cookie
+    var cookies = sessionStorage.getItem("jwt")
 </script>
 
 <template>

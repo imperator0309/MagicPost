@@ -38,7 +38,7 @@ export default {
         }
       };
       xmlhttp.open("GET", api_call_url, true);
-      xmlhttp.setRequestHeader("Authorization", document.cookie);
+      xmlhttp.setRequestHeader("Authorization", sessionStorage.getItem("jwt"));
       xmlhttp.send(null);
     });
     },
@@ -73,7 +73,7 @@ export default {
         }
       };
       xmlhttp.open("GET", api_call_url, true);
-      xmlhttp.setRequestHeader("Authorization", document.cookie);
+      xmlhttp.setRequestHeader("Authorization", sessionStorage.getItem("jwt"));
       xmlhttp.send(null);
     }
   },
@@ -107,7 +107,7 @@ function searchWorkplace() {
     xmlhttp.open("GET", api_call_url2, true);
     xmlhttp.setRequestHeader("Accept", "application/json");
     xmlhttp.setRequestHeader("Content-Type", "application/json");
-    xmlhttp.setRequestHeader("Authorization", document.cookie);
+    xmlhttp.setRequestHeader("Authorization", sessionStorage.getItem("jwt"));
     xmlhttp.send(null);
 };
 </script>

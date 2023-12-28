@@ -73,7 +73,7 @@
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
-                'Authorization': document.cookie
+                'Authorization': sessionStorage.getItem("jwt")
             },
             body: JSON.stringify({
                 parcelData: {
