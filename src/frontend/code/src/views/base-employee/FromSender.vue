@@ -14,7 +14,7 @@
         document.getElementById('next').disabled = true
         selectedID[curr_page] = table.value.getParcels()
         curr_page = curr_page + 1
-        fetch('http://localhost:8080/parcel/history/to-receiver?page=' + curr_page,{
+        fetch('http://localhost:8080/parcel/history/from-receiver?page=' + curr_page,{
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
@@ -43,7 +43,7 @@
         document.getElementById('next').disabled = true
         selectedID[curr_page] = table.value.getParcels()
         curr_page = curr_page - 1
-        fetch('http://localhost:8080/parcel/history/to-receiver?page=' + curr_page,{
+        fetch('http://localhost:8080/parcel/history/from-receiver?page=' + curr_page,{
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
@@ -65,7 +65,7 @@
 
 
     onMounted(()=>{
-        fetch('http://localhost:8080/parcel/history/to-receiver?page=' + curr_page,{
+        fetch('http://localhost:8080/parcel/history/from-receiver?page=' + curr_page,{
             method: 'GET',
             headers: {
                 'Accept': 'application/json',

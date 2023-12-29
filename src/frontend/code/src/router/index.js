@@ -77,9 +77,9 @@ const routes = [
                 component: ()=>import('@/views/base-employee/FromSender.vue')
             },
             {
-                path: 'from-receiver',
-                name: 'base.employee.from.receiver',
-                component: ()=>import('@/views/base-employee/FromReceiver.vue')
+                path: 'to-receiver',
+                name: 'base.employee.to.receiver',
+                component: ()=>import('@/views/base-employee/ToReceiver.vue')
             }
         ]
     },

@@ -16,7 +16,7 @@
         child: [
             {name: 'delivery history', url: {name: 'base.employee.delivery.history'}},
             {name: 'from sender', url: {name: 'base.employee.from.sender'}},
-            {name: 'from receiver', url: {name: 'base.employee.from.receiver'}}
+            {name: 'to receiver', url: {name: 'base.employee.to.receiver'}}
         ]
     }
 
