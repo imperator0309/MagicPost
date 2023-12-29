@@ -8,6 +8,6 @@ router.get('/create', AccountController.showCreateAccountPage)
 router.get('/edit', AccountController.editAccount)
 router.post('/create', AccountController.createAccount)
 router.put('/edit', AccountController.updateAccount)
-router.delete('/delete', AccountController.deleteAccount)
+router.post('/delete', AccountController.deleteAccount)
 
 module.exports = router
