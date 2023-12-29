@@ -25,7 +25,7 @@ export default {
         headers: {
           "Accept": "application/json",
           "Content-Type": "application/json",
-          "Authorization": sessionStorage.getItem("jwt"),
+          "Authorization": document.cookie,
         },
       });
 
@@ -44,14 +44,15 @@ export default {
           if (children.length === 0 || depth > 5) {
             return {
               name: base.baseLocation,
+              id: base._id
             };
           }
           return {
             name: base.baseLocation,
+            id: base._id,
             children: children.map(child => buildTree(child, depth + 1)),
           };
         };
-
         const topLevelBases = obj['base'].filter(base => base.baseType === 0);
         this.treeData = topLevelBases.map(buildTree);
       }
@@ -67,7 +68,9 @@ export default {
   <div class="basetrade">
     <h1>Base and Transaction information</h1>
     <h3> Currently we have these bases and transactions below: </h3>
-    <TreeView :data="treeData"></TreeView>
+    <br> <br> <br>
+    <p> <TreeView :data="treeData"></TreeView> </p>
+    <br> <br> <br>
   </div>
 </template>
 

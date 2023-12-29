@@ -1,6 +1,6 @@
 <script setup>
     import Employee from '@/components/Employee.vue'
-    import AddAccount from '@/views/depo-manager/AddAccount.vue';
+    import AddAccount from '@/views/director/AddAccount.vue';
     import { ref, onMounted } from 'vue';
 
     var data = {}
@@ -135,6 +135,7 @@
         });
     }
 
+
     function toggleAddButton() {
         var add = document.getElementById("abc123");
         console.log(add);
@@ -147,7 +148,7 @@
 </script>
 
 <template>
-    <h1>Depo account management</h1>
+    <h1>Account management</h1>
     <div id="nav">
         <button @click="refresh()"> REFRESH </button>
         <button id="next" @click="nextPage()">NEXT PAGE</button>

@@ -8,7 +8,7 @@ export default {
   data() {
     return {
       showAddAccount: false, show: false, showDelete: false, showEditForm: false,
-      addAccountKey: 0, selectedRow: null,
+      addAccountKey: 0, selectedRow: null, acc: []
     };
   },
   methods: {
@@ -29,7 +29,7 @@ export default {
       xhr.open("PUT", api_call_url);
       xhr.setRequestHeader("Accept", "application/json");
       xhr.setRequestHeader("Content-Type", "application/json");
-      xhr.setRequestHeader("Authorization", sessionStorage.getItem("jwt"));
+      xhr.setRequestHeader("Authorization", document.cookie);
       xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
           console.log(xhr.status);
@@ -80,13 +80,13 @@ export default {
           xmlhttp.open("GET", api_call_url, true);
           xmlhttp.setRequestHeader("Accept", "application/json");
           xmlhttp.setRequestHeader("Content-Type", "application/json");
-          xmlhttp.setRequestHeader("Authorization", sessionStorage.getItem("jwt"));
+          xmlhttp.setRequestHeader("Authorization", document.cookie);
           xmlhttp.send(null);
     }
   },
   components: {
-    AddAccount, BaseDialog, EmployeeTable, EditAccount
-  },
+    AddAccount, BaseDialog, EmployeeTable, EditAccount,
+},
 };
 
 function deleteAccount(accountID) {
@@ -94,7 +94,7 @@ function deleteAccount(accountID) {
   xhr.open("DELETE", "http://localhost:8080/account/delete/");
   xhr.setRequestHeader("Accept", "application/json");
   xhr.setRequestHeader("Content-Type", "application/json");
-  xhr.setRequestHeader("Authorization", sessionStorage.getItem("jwt"))
+  xhr.setRequestHeader("Authorization", document.cookie)
   xhr.onreadystatechange = function() {
     if (xhr.readyState === 4) {
       console.log(xhr.status);
@@ -127,8 +127,8 @@ function searchAccount() {
                                   var name = document.createElement('td');
                                   var role = document.createElement('td');
                                   var username = document.createElement('td');
-                                  name.id = "account" + i.toString();
-                                  number.innerHTML = i.toString();
+                                  name.id = "account" + (i+1).toString();
+                                  number.innerHTML = (i+1).toString();
                                   name.innerHTML = obj.accounts[i].name;
                                   role.innerHTML = obj.accounts[i].role;
                                   username.innerHTML = obj.accounts[i].username;
@@ -145,50 +145,77 @@ function searchAccount() {
           xmlhttp.open("GET", api_call_url, true);
           xmlhttp.setRequestHeader("Accept", "application/json");
           xmlhttp.setRequestHeader("Content-Type", "application/json");
-          xmlhttp.setRequestHeader("Authorization", sessionStorage.getItem("jwt"));
+          xmlhttp.setRequestHeader("Authorization", document.cookie);
           xmlhttp.send(null);
     }
+
+  function getAccounts() {
+    var base_url = "http://localhost:8080/account/view"
+    var api_call_url = base_url;
+    var xmlhttp = new XMLHttpRequest();
+
+    xmlhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            var obj = JSON.parse(this.responseText);
+            var len = obj['accounts'].length;
+            if (len == 0) {
+                alert('Error in finding data');
+            } else {
+                var returnAccount = [];
+                for (var i = 0; i < len; i++) {
+                    returnAccount[i] = [(i + 1).toString(), obj.accounts[i].name, obj.accounts[i].role, obj.accounts[i].username];
+                }
+                return returnAccount;
+            }
+        }
+    };
+    xmlhttp.open("GET", api_call_url, true);
+    xmlhttp.setRequestHeader("Accept", "application/json");
+    xmlhttp.setRequestHeader("Content-Type", "application/json");
+    xmlhttp.setRequestHeader("Authorization", document.cookie);
+    xmlhttp.send(null);
+}
 </script>
 
-<template>
-    <p class="left"> <button @click="searchAccount()">Get accounts</button> </p>
-    <div class="accmanage">
-      <h1>Account management</h1>
-      <table id="output_table" class="table_container">
-        <thead> 
-          <tr>
-              <th>ID</th>
-              <th class="col1">Full name</th>
-              <th class="col2">Role</th>
-              <th class="col3">Username</th>
-          </tr>
-        </thead>
-        <tbody>
-        </tbody>
-      </table>
+<template> 
+<p class="left"> <button @click="searchAccount()">Get accounts</button> </p>
+  <div class="accmanage">
+    <h1>Account management</h1>
+    <table id="output_table" class="table_container">
+      <thead> 
+        <tr>
+            <th>ID</th>
+            <th class="col1">Full name</th>
+            <th class="col2">Role</th>
+            <th class="col3">Username</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+  </div>
+  <p>
+              <BaseDialog :active.sync="show">
+              <h1>Choose an account to edit</h1>
+              <EmployeeTable @row-selected="handleRowSelected"/>
+              <p> <button class="dialogbutton" type="button" @click="showEditForm = !showEditForm"> Edit </button>
+              <EditAccount v-if="showEditForm" :editedAccount="selectedRow" @submitForm="submitEdit(selectedRow)" @cancelEdit="cancelEdit" /> </p>
+              <div id="dialog1"> <button class="dialogbutton" type="button" @click="show = !show">OK</button>
+              <button class="dialogbutton" type="button" @click="show = !show">Close</button> </div>
+              </BaseDialog>
+              <BaseDialog :active.sync="showDelete">
+                <h1>Choose an account to delete</h1>
+                <p> <EmployeeTable @row-selected="handleRowSelected"/> </p>
+                <button class="dialogbutton" type="button" @click="toggleDeleteAccount(selectedRow._id)">Delete</button>
+                <button class="dialogbutton" type="button" @click="showDelete = !showDelete">Close</button>
+              </BaseDialog>
+      <div id="allbuttons"> <button type="button" @click="show = !show">Edit account</button>
+      <button type="button" @click="showDelete = !showDelete">Delete account</button>
+      <button @click="clickAddAccount()">Add an account</button> </div>
+    <div v-if="showAddAccount" >
+      <AddAccount :key="addAccountKey"/>
     </div>
-    <p>
-                <BaseDialog :active.sync="show">
-                <h1>Choose an account to edit</h1>
-                <EmployeeTable @row-selected="handleRowSelected"/>
-                <p> <button class="dialogbutton" type="button" @click="showEditForm = !showEditForm"> Edit </button>
-                <EditAccount v-if="showEditForm" :editedAccount="selectedRow" @submitForm="submitEdit(selectedRow)" @cancelEdit="cancelEdit" /> </p>
-                <div id="dialog1"> <button class="dialogbutton" type="button" @click="show = !show">OK</button>
-                <button class="dialogbutton" type="button" @click="show = !show">Close</button> </div>
-                </BaseDialog>
-                <BaseDialog :active.sync="showDelete">
-                  <h1>Choose an account to delete</h1>
-                  <p> <EmployeeTable @row-selected="handleRowSelected"/> </p>
-                  <button class="dialogbutton" type="button" @click="toggleDeleteAccount(selectedRow._id)">Delete</button>
-                  <button class="dialogbutton" type="button" @click="showDelete = !showDelete">Close</button>
-                </BaseDialog>
-        <div id="allbuttons"> <button type="button" @click="show = !show">Edit account</button>
-        <button type="button" @click="showDelete = !showDelete">Delete account</button>
-        <button @click="clickAddAccount()">Add an account</button> </div>
-      <div v-if="showAddAccount" >
-        <AddAccount :key="addAccountKey"/>
-      </div>
-    </p>
+  </p>
 </template>
 
 <style scoped>

@@ -5,7 +5,7 @@
     const manager_links = {
         group_name: 'director panels',
         child: [
-            {name: 'accounts', url: {name: 'director.account.manage'}},
+            {name: 'accounts', url: {name: 'director.test.manage'}},
             {name: 'parcel-stats', url: {name: 'director.parcel.stats'}},
             {name: 'base-trade', url: {name: 'director.base.trade'}},
         ]
@@ -17,17 +17,17 @@
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
-                'Authorization': sessionStorage.getItem("jwt")
+                'Authorization': document.cookie
             },
         })
         .then(response => {
-            sessionStorage.clear()
+            document.cookie = ''
             router.push({name: 'login'})
         })
     }
 
     function home() {
-        router.push({name: 'director'})
+        router.push({name: 'director.default'})
     }
 </script>
 

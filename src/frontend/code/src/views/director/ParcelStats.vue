@@ -1,82 +1,104 @@
 <script>
+import { default as Chart } from '@/components/Chart.vue';
+
 export default {
-  data() {
-    return {
-      totalTrans: 0,
-      totalReceivedTrans: 0,
-      totalParcel: 0,
-      totalReceivedParcel: 0
-    };
-  },
-  mounted() {
-    this.searchStatistics();
-  },
-  methods: {
-  async fetchParcelStatistics(baseID) {
-    const base_url = "http://localhost:8080/statistic/base?id=";
-    const api_call_url = base_url + baseID;
-    return new Promise((resolve, reject) => {
-      const xmlhttp = new XMLHttpRequest();
-      
-      xmlhttp.onreadystatechange = () => {
-        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-          const obj = JSON.parse(xmlhttp.responseText);
-          const dataTrans = obj['total'];
-          const dataReceivedTrans = obj['delivered'];
-          let totalParcel = 0;
-          let totalReceivedParcel = 0;
-
-          for (const data of dataTrans) {
-            totalParcel += parseInt(data.count);
-          }
-
-          for (const data of dataReceivedTrans) {
-            totalReceivedParcel += parseInt(data.count);
-          }
-
-          resolve({ totalParcel, totalReceivedParcel });
-        }
-      };
-      xmlhttp.open("GET", api_call_url, true);
-      xmlhttp.setRequestHeader("Authorization", sessionStorage.getItem("jwt"));
-      xmlhttp.send(null);
-    });
+    data() {
+        return {
+            totalTrans: 0,
+            totalReceivedTrans: 0,
+            totalParcel: 0,
+            totalReceivedParcel: 0,
+            totalPriceParcel: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            totalArr: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            receivedArr: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            priceArr: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            showChart: false,
+            monthlyChart: [], monthlyChart2: [], monthlyChart3: [], 
+            monthlyChartKey: 0,
+            legend1: "Total parcels sent",
+            legend2: "Total parcels received by customers",
+            legend3: "Total price",
+        };
     },
-    async showParcel() {
-      const allWorkplaces = document.getElementById("workplace");
-      const selectedWorkplace = allWorkplaces.options[allWorkplaces.selectedIndex].id;
-      try {
-        const { totalParcel, totalReceivedParcel } = await this.fetchParcelStatistics(selectedWorkplace);
-        this.totalParcel = totalParcel;
-        this.totalReceivedParcel = totalReceivedParcel;
-      } catch (error) {
-        alert("Error happened");
-      }
+    components: {
+      Chart
     },
-    searchStatistics() {
-      searchWorkplace();
-      const base_url = "http://localhost:8080/statistic/general";
-      const api_call_url = base_url;
-      const xmlhttp = new XMLHttpRequest();
+    mounted() {
+        this.searchStatistics();
+    },
+    methods: {
+        async fetchParcelStatistics(baseID) {
+            const base_url = "http://localhost:8080/statistic/base?id=";
+            const api_call_url = base_url + baseID;
+            return new Promise((resolve, reject) => {
+                const xmlhttp = new XMLHttpRequest();
+                xmlhttp.onreadystatechange = () => {
+                    if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                        const obj = JSON.parse(xmlhttp.responseText);
+                        const dataTrans = obj['total'];
+                        const dataReceivedTrans = obj['delivered'];
+                        let totalParcel = 0;
+                        let totalReceivedParcel = 0;
+                        this.totalArr = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                        this.receivedArr = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                        this.totalPriceParcel = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                        for (var data of dataTrans) {
+                            totalParcel += parseInt(data.count);
+                            this.totalArr[parseInt(data._id)-1] = parseInt(data.count);
+                            this.totalPriceParcel[parseInt(data._id)-1] += parseInt(data.totalPrice);
+                        }
+                        for (var data of dataReceivedTrans) {
+                            totalReceivedParcel += parseInt(data.count);
+                            this.receivedArr[parseInt(data._id)-1] = data.count;
+                        }
+                        this.monthlyChart = this.totalArr;
+                        this.monthlyChart2 = this.receivedArr;
+                        this.monthlyChart3 = this.totalPriceParcel;
+                        resolve({ totalParcel, totalReceivedParcel});
+                    }
+                };
+                xmlhttp.open("GET", api_call_url, true);
+                xmlhttp.setRequestHeader("Authorization", document.cookie);
+                xmlhttp.send(null);
+            });
+        },
+        async showParcel() {
+            const allWorkplaces = document.getElementById("workplace");
+            const selectedWorkplace = allWorkplaces.options[allWorkplaces.selectedIndex].id;
+            try {
+                const { totalParcel, totalReceivedParcel } = await this.fetchParcelStatistics(selectedWorkplace);
+                this.totalParcel = totalParcel;
+                this.totalReceivedParcel = totalReceivedParcel;
+                this.monthlyChartKey += 1;
+            }
+            catch (error) {
+                alert("Error happened");
+            }
+        },
+        searchStatistics() {
+            searchWorkplace();
+            const base_url = "http://localhost:8080/statistic/general";
+            const api_call_url = base_url;
+            const xmlhttp = new XMLHttpRequest();
+            xmlhttp.onreadystatechange = () => {
+                if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                    const obj = JSON.parse(xmlhttp.responseText);
+                    const dataTrans = obj['total'];
+                    const dataReceivedTrans = obj['success'];
+                    for (const data of dataTrans) {
+                        this.totalTrans += parseInt(data.count);
+                    }
+                    for (const data of dataReceivedTrans) {
+                        this.totalReceivedTrans += parseInt(data.count);
+                    }
+                }
+            };
+            xmlhttp.open("GET", api_call_url, true);
+            xmlhttp.setRequestHeader("Authorization", document.cookie);
+            xmlhttp.send(null);
+        },
 
-      xmlhttp.onreadystatechange = () => {
-        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-          const obj = JSON.parse(xmlhttp.responseText);
-          const dataTrans = obj['total'];
-          const dataReceivedTrans = obj['success'];
-          for (const data of dataTrans) {
-            this.totalTrans += parseInt(data.count);
-          }
-          for (const data of dataReceivedTrans) {
-            this.totalReceivedTrans += parseInt(data.count);
-          }
-        }
-      };
-      xmlhttp.open("GET", api_call_url, true);
-      xmlhttp.setRequestHeader("Authorization", sessionStorage.getItem("jwt"));
-      xmlhttp.send(null);
-    }
-  },
+    },
 };
 
 function searchWorkplace() {
@@ -107,7 +129,7 @@ function searchWorkplace() {
     xmlhttp.open("GET", api_call_url2, true);
     xmlhttp.setRequestHeader("Accept", "application/json");
     xmlhttp.setRequestHeader("Content-Type", "application/json");
-    xmlhttp.setRequestHeader("Authorization", sessionStorage.getItem("jwt"));
+    xmlhttp.setRequestHeader("Authorization", document.cookie);
     xmlhttp.send(null);
 };
 </script>
@@ -119,21 +141,26 @@ function searchWorkplace() {
         </h1>
     </div>
     <div>
-        <p>Total sent parcels: {{ totalTrans }}</p>
-        <p>Total received parcels: {{ totalReceivedTrans }}</p>
+        <p>Total parcels sent to customers: {{ totalTrans }}</p>
+        <p>Total parcels delivered by customers successfully: {{ totalReceivedTrans }}</p>
     </div>
     <p>
         <h2> Parcel send statistic table: </h2>
     </p>
     <div class="showItem"> 
         Choose a base or transaction center to show:
-        <select id="workplace" name="workplace" @load=""> 
+        <select id="workplace" name="workplace" @change="showParcel(), showChart = true"> 
         </select>
-        <button @click="showParcel">Show</button>
     </div>
     <div>
-    <p>Total sent parcels: {{ totalParcel }}</p>
-    <p>Total received parcels: {{ totalReceivedParcel }}</p>
+    <p>Total parcels sent to receivers: {{ totalParcel }}</p>
+    <p>Total parcels received by customers successfully: {{ totalReceivedParcel }}</p>
+    <p> Choose a base or depo to see the chart: </p>
+    <div v-if="showChart">
+      <Chart :monthlyData="monthlyChart" :legend="legend1" :key="monthlyChartKey"/>
+      <Chart :monthlyData="monthlyChart2" :legend="legend2" :key="monthlyChartKey"/>
+      <Chart :monthlyData="monthlyChart3" :legend="legend3" :key="monthlyChartKey"/>
+     </div>
   </div>
 </template>
 

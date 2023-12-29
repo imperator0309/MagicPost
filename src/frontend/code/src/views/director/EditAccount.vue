@@ -3,8 +3,6 @@ export default {
   props: {
     editedAccount: Object,
   },
-  mounted() {
-  },
   methods: {
     checkValid() {
       var userFullname = document.getElementById("fname").value;
@@ -96,7 +94,7 @@ export default {
     xmlhttp.open("GET", api_call_url2, true);
     xmlhttp.setRequestHeader("Accept", "application/json");
     xmlhttp.setRequestHeader("Content-Type", "application/json");
-    xmlhttp.setRequestHeader("Authorization", sessionStorage.getItem("jwt"));
+    xmlhttp.setRequestHeader("Authorization", document.cookie);
     xmlhttp.send(null);
     }
   },
@@ -162,7 +160,7 @@ function searchWorkplace() {
     xmlhttp.open("GET", api_call_url2, true);
     xmlhttp.setRequestHeader("Accept", "application/json");
     xmlhttp.setRequestHeader("Content-Type", "application/json");
-    xmlhttp.setRequestHeader("Authorization", sessionStorage.getItem("jwt"));
+    xmlhttp.setRequestHeader("Authorization", document.cookie);
     xmlhttp.send(null);
 }
 </script>
@@ -170,40 +168,7 @@ function searchWorkplace() {
 <template>
   <div>
     <form @submit.prevent="checkValid">
-      <div>
-        <label for="fname">Full name:</label>
-        <input type="text" id="fname" name="fname" v-model="editedAccount.name">
-      </div>
-      <div>
-        <label>Role: </label>
-        <select id="role" name="role" v-model="editedAccount.role"  @change=searchWorkplace>
-          <option value="1">Base manager</option>
-          <option value="2">Trans manager</option>
-          <option value="3">Base employee</option>
-          <option value="4">Trans employee</option>
-        </select>
-      </div>
-      <div>
-        <label>Work at: </label>
-        <select id="workplace" name="workplace" v-model="editedAccount.workplace">
-        </select>
-      </div>
-      <div>
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" v-model="editedAccount.username">
-      </div>
-      <div>
-        <label for="pass">Password:</label>
-        <input type="text" id="pass" name="pass" v-model="editedAccount.password">
-      </div>
-      <div>
-        <label for="repass">Re-password:</label>
-        <input type="text" id="repass" name="repass" v-model="editedAccount.repassword">
-      </div>
-      <div class="submitbutton">
-        <input class='formbutton' type="submit" value="Submit" @click="checkValid">
-        <input class='formbutton' style="margin-left: auto;" type="button" value="Cancel" @click="cancelEdit">
-      </div>
+      
     </form>
   </div>
 </template>

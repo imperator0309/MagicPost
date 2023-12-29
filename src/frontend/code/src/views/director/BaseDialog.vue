@@ -1,28 +1,35 @@
 <template>
-    <transition name="dialog">
-      <div v-if="active" class="dialog-backdrop" @click="handleBackdropClick">
-        <div class="dialog-container" @click.stop>
-          <slot> </slot>
-        </div>
+  <transition name="dialog">
+    <div v-if="active" class="dialog-backdrop" @click="handleBackdropClick">
+      <div class="dialog-container" @click.stop>
+        <slot> </slot>
       </div>
-    </transition>
+    </div>
+  </transition>
 </template>
-  
+
 <script>
-  export default {
-    name: "BaseDialog",
-    props: {
-      active: { type: Boolean, default: false },
-      msg: String
-    },
-    methods: {
-      handleBackdropClick() {
-        this.$emit("update:active", false);
+export default {
+  name: "BaseDialog",
+  props: {
+    active: { type: Boolean, default: false },
+    msg: String
+  },
+  watch: {
+    active(newValue) {
+      if (newValue) {
+      } else {
       }
     }
-  };
-  </script>
-  
+  },
+  methods: {
+    handleBackdropClick() {
+      this.$emit("update:active", !this.active);
+    }
+  }
+};
+</script>
+
   <style scoped>
   .dialog-backdrop {
     position: fixed;

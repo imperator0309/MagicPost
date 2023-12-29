@@ -11,8 +11,6 @@
             <select id="role" name="role" @change="searchWorkplace()" @load="searchWorkplace()">
                 <option value="basemanager" :disabled="isOptionDisabled('basemanager')">Base manager</option>
                 <option value="transmanager" :disabled="isOptionDisabled('transmanager')">Trans manager</option>
-                <option value="baseemployee" :disabled="isOptionDisabled('baseemployee')">Base employee</option>
-                <option value="transemployee" :disabled="isOptionDisabled('transemployee')">Trans employee</option>
             </select>
         </div>
         <div>
@@ -109,7 +107,7 @@ function searchWorkplace() {
     xmlhttp.open("GET", api_call_url2, true);
     xmlhttp.setRequestHeader("Accept", "application/json");
     xmlhttp.setRequestHeader("Content-Type", "application/json");
-    xmlhttp.setRequestHeader("Authorization", sessionStorage.getItem("jwt"));
+    xmlhttp.setRequestHeader("Authorization", document.cookie);
     xmlhttp.send(null);
 }
 
@@ -118,7 +116,7 @@ function postAccount() {
   xhr.open("POST", "http://localhost:8080/account/create");
   xhr.setRequestHeader("Accept", "application/json");
   xhr.setRequestHeader("Content-Type", "application/json");
-  xhr.setRequestHeader("Authorization", sessionStorage.getItem("jwt"))
+  xhr.setRequestHeader("Authorization", document.cookie)
   xhr.onreadystatechange = function () {
     if (xhr.readyState === 4) {
       console.log(xhr.status);

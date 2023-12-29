@@ -91,11 +91,6 @@ export default {
                 document.getElementById("pass").focus();
                 return ;
             }
-            if(getSelectedRole() == "0") {
-                alert("Error! You did not choose a role");
-                document.getElementById("pass").focus();
-                return ;
-            }
       this.$emit('submitForm', this.editedAccount);
     },
     cancelEdit() {
@@ -125,7 +120,7 @@ export default {
     xmlhttp.open("GET", api_call_url, true);
     xmlhttp.setRequestHeader("Accept", "application/json");
     xmlhttp.setRequestHeader("Content-Type", "application/json");
-    xmlhttp.setRequestHeader("Authorization", sessionStorage.getItem("jwt"));
+    xmlhttp.setRequestHeader("Authorization", document.cookie);
     xmlhttp.send(null);
     }
   },

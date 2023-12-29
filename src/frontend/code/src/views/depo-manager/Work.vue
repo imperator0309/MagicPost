@@ -16,17 +16,17 @@
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
-                'Authorization': sessionStorage.getItem("jwt")
+                'Authorization': document.cookie
             },
         })
         .then(response => {
-            sessionStorage.clear()
+            document.cookie = ''
             router.push({name: 'login'})
         })
     }
 
     function home() {
-        router.push({name: 'depo.manager'})
+        router.push({name: 'depo.manager.default'})
     }
 </script>
 
