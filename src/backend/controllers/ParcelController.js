@@ -159,6 +159,9 @@ class ParcelController {
                         },
                         {
                             status: statusFilter
+                        },
+                        {
+                            nextBase: workingBaseID
                         }
                     ]
                 })
@@ -259,6 +262,9 @@ class ParcelController {
                         },
                         {
                             status: 1
+                        },
+                        {
+                            nextBase: workingBaseID
                         }
                     ]
                 })
@@ -269,6 +275,7 @@ class ParcelController {
                 const basesList = Bases.find({superiorBase: workingBaseID})
                 Promise.all([incomingParcels, basesList])
                     .then(([parcels, bases]) => {
+                        console.log(parcels)
                         res.status(200).json({
                             parcels: multipleMongooseToObject(parcels),
                             bases: multipleMongooseToObject(bases)
