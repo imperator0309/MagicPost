@@ -126,9 +126,14 @@ const routes = [
         component: DirectorWork,
         children: [
             {
-                path: 'account-manage', 
-                name: 'director.account.manage', 
-                component: ()=>import("@/views/director/AccountManagement.vue"),
+                path: '',
+                name: 'director.default',
+                component: ()=>import('@/views/director/ParcelStats.vue')
+            },
+            {
+                path: 'test-manage', 
+                name: 'director.test.manage', 
+                component: ()=>import("@/views/director/TestManage.vue"),
                 children: [ 
                     {
                         path: 'add-account',
@@ -160,6 +165,11 @@ const routes = [
         component: BaseManagerWork,
         children: [
             {
+                path: '',
+                name: 'base.manager.default',
+                component: ()=>import('@/views/base-manager/BaseStats.vue')
+            },
+            {
                 path: 'base-account',
                 name: 'basemanager.base.account',
                 component: ()=>import('@/views/base-manager/BaseAccount.vue')
@@ -177,6 +187,11 @@ const routes = [
         component: DepoManagerWork,
         children: [
             {
+                path: '',
+                name: 'depo.manager.default',
+                component: ()=>import('@/views/depo-manager/TransStats.vue')
+            },
+            {
                 path: 'depo-account',
                 name: 'depomanager.trans.account',
                 component: ()=>import('@/views/depo-manager/TransAccount.vue')
@@ -186,6 +201,7 @@ const routes = [
                 name: 'depomanager.trans.stats',
                 component: ()=>import('@/views/depo-manager/TransStats.vue')
             },
+
         ]
     },
 ]

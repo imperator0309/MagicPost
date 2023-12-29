@@ -54,11 +54,11 @@
             .then(details => details.json())
             .then(response => {
                 if (response['role'] == 0) {
-                    router.push({name: 'director'})
+                    router.push({name: 'director.default'})
                 } else if (response['role'] == 1) {
-                    router.push({name: 'base.manager'})
+                    router.push({name: 'base.manager.default'})
                 } else if (response['role'] == 2) {
-                    router.push({name: 'depo.manager'})
+                    router.push({name: 'depo.manager.default'})
                 } else if (response['role'] == 3) {
                     router.push({name: 'depo.employee.default'})
                 } else if (response['role'] == 4) {
