@@ -23,7 +23,8 @@
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
-                'Authorization': sessionStorage.getItem("jwt")
+                'Authorization': sessionStorage.getItem("jwt"),
+                'Cache-control': 'no-store'
             },
             body: JSON.stringify(
                 {
@@ -62,7 +63,8 @@
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
-                'Authorization': sessionStorage.getItem("jwt")
+                'Authorization': sessionStorage.getItem("jwt"),
+                'Cache-control': 'no-store'
             },
         })
         .then((response) => response.json())

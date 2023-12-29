@@ -33,7 +33,7 @@
     }
 
     function home() {
-        router.push({name: 'depo.employee'})
+        router.push({name: 'depo.employee.default'})
     }
 </script>
 
