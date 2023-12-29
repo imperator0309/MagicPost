@@ -74,7 +74,7 @@
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
                 'Authorization': sessionStorage.getItem("jwt"),
-                'Cache-control': 'no-cache'
+                'Cache-control': 'no-store'
             },
             body: JSON.stringify({
                 parcelData: {

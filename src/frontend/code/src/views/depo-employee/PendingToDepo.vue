@@ -44,7 +44,7 @@
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
                     'Authorization': sessionStorage.getItem("jwt"),
-                    'Cache-control': 'no-cache'
+                    'Cache-control': 'no-store'
                 },
             })
             .then((response) => response.json())
@@ -67,7 +67,7 @@
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
                 'Authorization': sessionStorage.getItem("jwt"),
-                'Cache-control': 'no-cache'
+                'Cache-control': 'no-store'
             },
         })
         .then((response) => response.json())
@@ -98,7 +98,7 @@
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
                 'Authorization': sessionStorage.getItem("jwt"),
-                'Cache-control': 'no-cache'
+                'Cache-control': 'no-store'
             },
         })
         .then((response) => response.json())
@@ -119,7 +119,7 @@
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
                 'Authorization': sessionStorage.getItem("jwt"),
-                'Cache-control': 'no-cache'
+                'Cache-control': 'no-store'
             },
         })
         .then((response) => response.json())
